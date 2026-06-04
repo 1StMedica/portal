@@ -2,174 +2,2108 @@
 <html lang="ro">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>1st Medica — Portal Intern</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{height:100%;background:#f7f5ee;}
-body{font-family:'DM Sans',sans-serif;min-height:100vh;}
-:root{
-  --gold:#8a7730;--gold-mid:#b09840;--gold-light:#c8ad58;
-  --bg:#f7f5ee;--bg-card:#f0ece0;--border:#d4c88a;--border-light:#e0d8b0;
-  --text-dark:#2a2510;--text-mid:#5a4e28;--text-muted:#8a7c50;
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>CRM Decizii Decontare</title>
+
+<!-- Firebase SDK - async -->
+<script>
+window._fbLoaded = false;
+window._fbQueue = [];
+window._fbConfig = {
+  apiKey: "AIzaSyDC8l0sOwCRgHHWbzBiFDBjmhv3MAV7oJw",
+  authDomain: "cmr-neincasate.firebaseapp.com",
+  projectId: "cmr-neincasate",
+  storageBucket: "cmr-neincasate.firebasestorage.app",
+  messagingSenderId: "361457318236",
+  appId: "1:361457318236:web:b7e99b352aabbdca50a999"
+};
+function loadFirebase(){
+  var s1=document.createElement('script');
+  s1.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js';
+  s1.onload=function(){
+    var s2=document.createElement('script');
+    s2.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js';
+    s2.onload=function(){
+      var s3=document.createElement('script');
+      s3.src='https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js';
+      s3.onload=function(){
+        try{
+          firebase.initializeApp(window._fbConfig);
+          window.db=firebase.firestore();
+          window.auth=firebase.auth();
+          window._fbLoaded=true;
+          setTimeout(function(){
+            if(typeof startAuthListener==='function') startAuthListener();
+            window._fbQueue.forEach(function(fn){try{fn();}catch(e){}});
+            window._fbQueue=[];
+          },0);
+        }catch(e){console.warn('Firebase init error:',e);}
+      };
+      document.head.appendChild(s3);
+    };
+    document.head.appendChild(s2);
+  };
+  document.head.appendChild(s1);
 }
-.page{min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden;}
-.page::before{content:'';position:absolute;inset:0;
-  background:radial-gradient(ellipse 50% 60% at 80% 20%,rgba(184,164,74,0.08) 0%,transparent 60%),
-             radial-gradient(ellipse 40% 40% at 10% 80%,rgba(184,164,74,0.05) 0%,transparent 60%);
-  pointer-events:none;}
+window.signInApp=function(){if(typeof window._signInImpl==='function')window._signInImpl();else setTimeout(window.signInApp,100);};
+window.signOut=function(){if(typeof window._signOutImpl==='function')window._signOutImpl();};
+window.addEventListener('load',function(){setTimeout(loadFirebase,50);});
+</script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-/* HEADER */
-.header{display:flex;align-items:center;justify-content:space-between;padding:28px 64px 24px;border-bottom:0.5px solid var(--border);position:relative;z-index:2;background:var(--bg);}
-.header-logo{display:flex;align-items:center;gap:20px;}
-.logo-img{width:68px;height:68px;border-radius:3px;object-fit:cover;border:0.5px solid var(--border-light);}
-.logo-sep{width:0.5px;height:42px;background:var(--border);}
-.logo-name{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--text-dark);letter-spacing:2px;text-transform:uppercase;line-height:1;}
-.logo-tagline{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-top:6px;font-weight:500;}
-.header-badge{display:flex;align-items:center;gap:8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);font-weight:500;}
-.badge-dot{width:7px;height:7px;border-radius:50%;background:var(--gold-mid);}
-
-/* HERO */
-.hero{padding:56px 64px 40px;position:relative;z-index:2;}
-.hero-label{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--text-muted);margin-bottom:18px;display:flex;align-items:center;gap:14px;font-weight:600;}
-.hero-label::before{content:'';display:block;width:32px;height:0.5px;background:var(--gold-mid);}
-.hero-title{font-family:'Playfair Display',serif;font-size:56px;font-weight:700;line-height:1.1;color:var(--text-dark);margin-bottom:12px;max-width:600px;}
-.hero-title em{color:var(--gold);font-style:italic;font-weight:600;}
-.hero-sub{font-size:13px;color:var(--text-mid);line-height:1.8;max-width:400px;font-weight:400;}
-
-/* DIVIDER */
-.gold-divider{display:flex;align-items:center;gap:14px;padding:0 64px;margin-bottom:38px;position:relative;z-index:2;}
-.gold-line{flex:1;height:0.5px;background:var(--border);}
-.gold-diamond{width:6px;height:6px;background:var(--gold-mid);transform:rotate(45deg);flex-shrink:0;}
-.gold-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;font-weight:600;}
-
-/* CARDS */
-.cards-area{flex:1;padding:0 64px 64px;position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
-.app-card{background:var(--bg-card);border:0.5px solid var(--border-light);border-radius:2px;padding:34px 30px 28px;cursor:pointer;transition:border-color 0.25s,background 0.25s,box-shadow 0.25s;position:relative;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
-.app-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-mid),transparent);opacity:0;transition:opacity 0.3s;}
-.app-card:hover{border-color:var(--gold-mid);background:#ece8d8;box-shadow:0 4px 24px rgba(176,152,64,0.12);}
-.app-card:hover::after{opacity:1;}
-.card-num{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--text-muted);margin-bottom:24px;font-weight:700;}
-.card-icon-wrap{width:48px;height:48px;border:0.5px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;transition:border-color 0.25s;color:var(--gold);}
-.app-card:hover .card-icon-wrap{border-color:var(--gold-mid);}
-.card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--text-dark);margin-bottom:10px;line-height:1.3;}
-.card-desc{font-size:12px;color:var(--text-mid);line-height:1.8;font-weight:400;flex:1;}
-.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:24px;padding-top:16px;border-top:0.5px solid var(--border-light);}
-.card-cta{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);transition:color 0.2s;font-weight:600;}
-.app-card:hover .card-cta{color:var(--gold);}
-.arrow-svg{width:14px;height:14px;stroke:var(--text-muted);fill:none;transition:transform 0.2s,stroke 0.2s;stroke-width:1.5;}
-.app-card:hover .arrow-svg{transform:translateX(4px);stroke:var(--gold);}
-
-/* FOOTER */
-.footer{padding:18px 64px;border-top:0.5px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;background:var(--bg);}
-.footer-txt{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);font-weight:500;}
-.f-dots{display:flex;gap:8px;}
-.f-dot{width:5px;height:5px;border-radius:50%;background:var(--border);}
-.f-dot.on{background:var(--gold-mid);}
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{
+  --bg:#f5f4f0;--surface:#fff;--border:rgba(0,0,0,.08);--bmed:rgba(0,0,0,.14);
+  --text:#1a1918;--t2:#6b6963;--t3:#9e9b94;
+  --purple:#534AB7;--pbg:#EEEDFE;--ptext:#3C3489;
+  --red:#A32D2D;--rbg:#FCEBEB;
+  --amber:#854F0B;--abg:#FAEEDA;
+  --green:#3B6D11;--gbg:#EAF3DE;
+  --blue:#185FA5;--bbg:#E6F1FB;
+  --teal:#0F6E56;--tbg:#E1F5EE;
+  --orange:#993C1D;--obg:#fdf0e8;
+  --r:10px;--rs:6px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
+.app{display:flex;min-height:100vh}
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto}
+.slogo{padding:20px 16px 16px;border-bottom:1px solid var(--border)}
+.lmark{display:flex;align-items:center;gap:8px}
+.lic{width:32px;height:32px;border-radius:8px;background:var(--teal);display:flex;align-items:center;justify-content:center;color:#fff;flex-shrink:0}
+.ltxt{font-size:15px;font-weight:600}.lsub{font-size:11px;color:var(--t3);margin-top:1px}
+.nav{padding:12px 8px;flex:1}
+.nlbl{font-size:10px;font-weight:600;color:var(--t3);letter-spacing:.08em;text-transform:uppercase;padding:0 8px;margin:14px 0 3px}
+.ni{display:flex;align-items:center;gap:9px;padding:10px 10px;border-radius:var(--rs);cursor:pointer;color:var(--t2);font-size:13px;transition:all .15s;margin-bottom:1px;-webkit-tap-highlight-color:transparent}
+.ni:hover{background:var(--bg);color:var(--text)}.ni.active{background:var(--tbg);color:var(--teal);font-weight:500}
+.ni svg{width:16px;height:16px;flex-shrink:0}
+.sfooter{padding:12px 16px;border-top:1px solid var(--border);font-size:11px;color:var(--t3)}
+/* MAIN */
+.main{flex:1;overflow-x:hidden}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10}
+.ptitle{font-size:17px;font-weight:600}.tactions{display:flex;gap:8px;align-items:center}
+.content{padding:24px 28px}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--rs);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;border:1px solid var(--bmed);background:var(--surface);color:var(--text);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--bg)}
+.btnp{background:var(--purple);color:#fff;border-color:var(--purple)}.btnp:hover{background:var(--ptext)}
+.btnt{background:var(--teal);color:#fff;border-color:var(--teal)}.btnt:hover{background:#0a5442}
+.btnr{background:var(--red);color:#fff;border-color:var(--red)}.btnr:hover{background:#8a2020}
+.btnsm{padding:5px 10px;font-size:12px}.btn svg{width:14px;height:14px}
+/* CARDS METRICI */
+.mgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.mgrid8{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.mc{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px;cursor:pointer;transition:all .15s}
+.mc:hover{border-color:var(--bmed);transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+.mlbl{font-size:11px;color:var(--t3);font-weight:500;text-transform:uppercase;letter-spacing:.05em}
+.mval{font-size:24px;font-weight:600;margin:4px 0 2px}.msub{font-size:11px;color:var(--t3)}
+.mc.red .mval{color:var(--red)}.mc.amber .mval{color:var(--amber)}.mc.purple .mval{color:var(--purple)}
+.mc.green .mval{color:var(--green)}.mc.blue .mval{color:var(--blue)}.mc.teal .mval{color:var(--teal)}
+.mc.orange .mval{color:var(--orange)}.mc.gray .mval{color:var(--t2)}
+/* CARD CONTAINER */
+.card{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden}
+.ch{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.ct{font-size:14px;font-weight:600}.cs{font-size:12px;color:var(--t3);margin-top:1px}
+.tw{overflow-x:auto}
+/* TABLE */
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:9px 12px;font-size:11px;font-weight:600;color:var(--t3);text-transform:uppercase;letter-spacing:.05em;background:var(--bg);border-bottom:1px solid var(--border);white-space:nowrap}
+tbody td{padding:10px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--bg)}
+.pn{font-weight:500}.pcnp{font-size:11px;color:var(--t3);font-family:'DM Mono',monospace}
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500}
+.br{background:var(--rbg);color:var(--red)}.ba{background:var(--abg);color:var(--amber)}
+.bg{background:var(--gbg);color:var(--green)}.bb{background:var(--bbg);color:var(--blue)}
+.bp{background:var(--pbg);color:var(--ptext)}.bt{background:var(--tbg);color:var(--teal)}
+.bo{background:var(--obg);color:var(--orange)}
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:100;align-items:center;justify-content:center}
+.mbg.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);width:640px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.mh{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.mtl{font-size:15px;font-weight:600}.mb{padding:20px}
+.mf{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+.bcl{background:none;border:none;cursor:pointer;color:var(--t3);font-size:22px;padding:0;line-height:1}.bcl:hover{color:var(--text)}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 18px;border-radius:var(--rs);font-size:13px;font-weight:500;z-index:300;transform:translateY(100px);opacity:0;transition:all .3s;max-width:340px}
+.toast.show{transform:translateY(0);opacity:1}.toast.success{background:var(--green)}.toast.error{background:var(--red)}
+/* PAGES */
+.page{display:none}.page.active{display:block}
+/* JURNAL LAYOUT */
+.jlay{display:grid;grid-template-columns:280px 1fr;gap:16px;min-height:600px}
+.plist{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;max-height:calc(100vh - 120px);position:sticky;top:88px}
+.plh{padding:12px 14px;border-bottom:1px solid var(--border)}
+.plsearch{width:100%;padding:7px 10px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--bg);color:var(--text)}
+.pli{overflow-y:auto;flex:1}
+.plitem{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.plitem:hover{background:var(--bg)}.plitem.active{background:var(--tbg);border-left:3px solid var(--teal)}
+.plname{font-size:13px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plmeta{font-size:11px;color:var(--t3);display:flex;gap:6px;align-items:center}
+.jmain{display:flex;flex-direction:column;gap:14px}
+/* FISA PACIENT */
+.pch{background:var(--surface);border-radius:var(--r);border:1px solid var(--border);padding:16px 18px}
+.fisa-tab{display:flex;align-items:center;gap:6px;padding:10px 16px;border:none;background:none;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;color:var(--t2);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.fisa-tab:hover{color:var(--text)}.fisa-tab.active{color:var(--teal);border-bottom-color:var(--teal)}
+/* INTERACTIUNI */
+.itype-btn{padding:6px 11px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;background:var(--surface);color:var(--t2);transition:all .15s}
+.itype-btn:hover{background:var(--bg)}.itype-btn.active{background:var(--tbg);color:var(--teal);border-color:var(--teal)}
+.timeline-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.timeline-item:last-child{border-bottom:none}
+.tl-icon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:13px}
+.tl-body{flex:1}
+.tl-header{display:flex;align-items:center;gap:8px;margin-bottom:3px}
+.tl-type{font-size:12px;font-weight:600}.tl-date{font-size:11px;color:var(--t3)}.tl-agent{font-size:11px;color:var(--t3)}
+.tl-text{font-size:13px;color:var(--t2);line-height:1.45}
+/* IMPORT ZONE */
+.iz{border:2px dashed var(--bmed);border-radius:var(--r);padding:40px;text-align:center;cursor:pointer;transition:all .2s;background:var(--surface);margin-bottom:20px}
+.iz:hover,.iz.drag{border-color:var(--teal);background:var(--tbg)}
+#fi{display:none}
+/* FORMS */
+.form-row{margin-bottom:14px}
+.form-lbl{font-size:12px;font-weight:500;color:var(--t2);margin-bottom:5px}
+.form-inp{width:100%;padding:9px 11px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s}
+.form-inp:focus{border-color:var(--teal)}
+textarea.form-inp{resize:vertical;min-height:80px}
+/* ALERTE TIPURI CULORI */
+.alert-pre30{background:#FAEEDA;color:#854F0B;border:1px solid rgba(133,79,11,.2)}
+.alert-pre10{background:var(--obg);color:var(--orange);border:1px solid rgba(153,60,29,.2)}
+.alert-dep{background:var(--rbg);color:var(--red);border:1px solid rgba(163,45,45,.2)}
+.alert-comp{background:var(--pbg);color:var(--ptext);border:1px solid rgba(83,74,183,.2)}
+/* STATUS DOTS */
+.sdot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.sdot-green{background:var(--green)}.sdot-amber{background:var(--amber)}.sdot-red{background:var(--red)}
+.sdot-gray{background:var(--t3)}.sdot-blue{background:var(--blue)}.sdot-purple{background:var(--purple)}
+/* EMPTY STATE */
+.empty{text-align:center;padding:50px 20px;color:var(--t3)}
+.etl{font-size:15px;color:var(--t2);font-weight:500;margin-bottom:4px}
+/* MISC */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.cw{padding:16px 18px}
+.filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+.fi{padding:7px 12px;border:1px solid var(--bmed);border-radius:var(--rs);font-family:inherit;font-size:13px;background:var(--surface);color:var(--text)}
+.divider-lbl{font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.06em;text-transform:uppercase;margin:18px 0 10px;display:flex;align-items:center;gap:8px}
+.divider-lbl::after{content:'';flex:1;height:0.5px;background:var(--border)}
+.notif-canal{display:flex;gap:8px;margin-bottom:16px}
+.notif-btn{flex:1;padding:10px;border:1px solid var(--bmed);border-radius:var(--rs);background:var(--surface);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;text-align:center;transition:all .15s;color:var(--t2)}
+.notif-btn:hover{background:var(--bg)}.notif-btn.active{background:var(--tbg);color:var(--teal);border-color:var(--teal)}
+/* SCROLLBAR */
+::-webkit-scrollbar{width:5px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--bmed);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--teal)}
+/* MOBILE */
+.hamb{display:none;background:none;border:none;cursor:pointer;color:var(--text);padding:4px}
+.hamb svg{width:20px;height:20px}
+.hamb-close{display:none}
+.sidebar-overlay{display:none}
+@media(max-width:768px){
+  .hamb{display:flex}
+  .sidebar{position:fixed;left:-240px;top:0;z-index:50;width:240px;transition:left .25s;height:100vh}
+  .sidebar.open{left:0}
+  .hamb-close{display:flex;background:none;border:none;cursor:pointer;position:absolute;top:16px;right:12px;color:var(--t3);padding:4px}
+  .hamb-close svg{width:18px;height:18px}
+  .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:40}
+  .sidebar-overlay.open{display:block}
+  .mgrid,.mgrid8{grid-template-columns:1fr 1fr}
+  .jlay{grid-template-columns:1fr}
+  .plist{max-height:300px;position:relative;top:0}
+  .topbar{padding:12px 16px}
+  .content{padding:16px}
+  .g2,.g3{grid-template-columns:1fr}
+}
+@media(max-width:480px){.mgrid,.mgrid8{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-<div class="page">
 
-  <div class="header">
-    <div class="header-logo">
-      <img class="logo-img" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/4RDgRXhpZgAATU0AKgAAAAgABAE7AAIAAAAHAAAISodpAAQAAAABAAAIUpydAAEAAAAOAAAQyuocAAcAAAgMAAAAPgAAAAAc6gAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEx1Y2lhbgAAAAWQAwACAAAAFAAAEKCQBAACAAAAFAAAELSSkQACAAAAAzgwAACSkgACAAAAAzgwAADqHAAHAAAIDAAACJQAAAAAHOoAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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bnRzLzEuMS8iPjxkYzpjcmVhdG9yPjxyZGY6U2VxIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpsaT5MdWNpYW48L3JkZjpsaT48L3JkZjpTZXE+DQoJCQk8L2RjOmNyZWF0b3I+PC9yZGY6RGVzY3JpcHRpb24+PC9yZGY6UkRGPjwveDp4bXBtZXRhPg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICA8P3hwYWNrZXQgZW5kPSd3Jz8+/9sAQwABAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/9sAQwEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEB/8IAEQgDIAMgAwEiAAIRAQMRAf/EAB0AAQADAQEBAQEBAAAAAAAAAAAGBwgJBQQDAgH/xAAcAQEAAgMBAQEAAAAAAAAAAAAABAUCAwYHAQj/2gAMAwEAAhADEAAAAdED8x+gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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mC17caz1VjurdPGvdVftN5XJ6Y+5sHlkbpgte3Gs9VY7q3Txr3VX7TeVyemPubB5ZG6YLXtxrPVWO6t0qS0TPcH6TjvAKfSSoieFbTwJKEM2UJIu8qPmip3Nu8RSpFNiiKJtqqvgiJa9lFapntj9IR2RJPoJFRfCndVt5o1bdaMXGzFaEBgqEBCu8okiKltcX5cTh3gqJny7vlFHGUSJTMcj4hAHF7dRxYl06EoKbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw71596224d68+9bbcO9efettuHevPvW23DvXn3rbbh3rz71ttw7159622uLjuJwLwRFyJd4SikDFJUpmNx8RAbidopYcK6dKVFXHnTVx10yccMlqRmaqRkS76kSqq/wDxhf8A/8QALhABAQABAwMCBQQDAAMBAAAAAREhADFBEFFhIHFggZHR8DBQoeGxwfFwgLCQ/9oACAEBAAE/If8A5jRqjQhFqIAMgEofYpP9Z980nPMAkIuV4cH+IvsAPqzbc5pUweXHTE5KnME3sM/dm78Qj1XaAb2VseRRRmTmwEjMCgwAOl/Ef8X7fiBvUISVjcyE3FdnOzwvgCysNAqFdRxAp4mHW5h3Izodfh8GXZQA5m+wN04xnRfdMAMbicHf2aQAdAPFMyOe4gDqpR2KXL5SEKqqten/AEov013wZfhTbJhNnQ7Yy9AvgDlE1dETIUFQ1Ryq5Vyuvcv1i6f+ld+nW7mOZFIZqMkGjTJPJJECqLdsHwt9wfULo/69f6Tc54X8PfpxcnfU/UXtfhYZu4fT7/Sv7h+ffzfQiZQAoIAZVcAZXQwjp3MgIBkCDNU0LCKssbuPHPDnSf4MH0CCGFAjh68s4Hv9x6ffXZ9w+Fj85f4/9dKbrpb5mmiMEYTGsNKZzYM0s28vQXtDoW5I8LIw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AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADkIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABCGEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABTwkEAAABGMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACMsAokAsMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACKEYBOwKncAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABLzzzzzz6KNaoEkOr3zzzzzyIAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAiIAAwAggAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAACKABGCw2oAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAsNKBdJSsUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAACMEtykbRYEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAqsAAAAAKAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA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" alt="1st Medica">
-      <div class="logo-sep"></div>
-      <div>
-        <div class="logo-name">1st Medica</div>
-        <div class="logo-tagline">Performanță în sănătate</div>
+<!-- LOGIN -->
+<div id="loginScreen" style="display:flex;min-height:100vh;align-items:center;justify-content:center;background:var(--bg)">
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:36px 32px;width:360px;max-width:95vw">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:48px;height:48px;border-radius:12px;background:var(--teal);display:inline-flex;align-items:center;justify-content:center;margin-bottom:14px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:24px;height:24px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><circle cx="12" cy="13" r="2"/></svg>
       </div>
+      <div style="font-size:20px;font-weight:600">CRM Decizii Decontare</div>
+      <div style="font-size:12px;color:var(--t3);margin-top:4px">1stMedica SRL</div>
     </div>
-    <div class="header-badge">
-      <div class="badge-dot"></div>
-      Portal intern
+    <div class="form-row">
+      <div class="form-lbl">Email</div>
+      <input id="loginEmail" type="email" placeholder="email@1stmedica.eu" class="form-inp" onkeydown="if(event.key==='Enter')document.getElementById('loginPass').focus()">
     </div>
-  </div>
-
-  <div class="hero">
-    <div class="hero-label">Aplicații integrate</div>
-    <div class="hero-title">Portal<br><em>1St Medica</em></div>
-    <div class="hero-sub">Acces centralizat la aplicațiile operaționale ale companiei.</div>
-  </div>
-
-  <div class="gold-divider">
-    <div class="gold-line"></div>
-    <div class="gold-diamond"></div>
-    <div class="gold-label">Selectați aplicația</div>
-    <div class="gold-diamond"></div>
-    <div class="gold-line"></div>
-  </div>
-
-  <div class="cards-area">
-
-    <a class="app-card" href="https://1stmedica-server-production.up.railway.app/" target="_blank">
-      <div class="card-num">— 01</div>
-      <div class="card-icon-wrap">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-      </div>
-      <div class="card-title">Contract Închiriere</div>
-      <div class="card-desc">Crearea contractelor de închiriere și a actelor adiționale.</div>
-      <div class="card-footer">
-        <div class="card-cta">Accesează</div>
-        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-      </div>
-    </a>
-
-    <a class="app-card" href="https://1stmedica.github.io/crm-restantieri/" target="_blank">
-      <div class="card-num">— 02</div>
-      <div class="card-icon-wrap">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
-      </div>
-      <div class="card-title">CRM Restanțieri</div>
-      <div class="card-desc">Urmărirea facturilor neîncasate.</div>
-      <div class="card-footer">
-        <div class="card-cta">Accesează</div>
-        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-      </div>
-    </a>
-
-    <a class="app-card" href="https://1stmedica.github.io/crm-decizii/" target="_blank">
-      <div class="card-num">— 03</div>
-      <div class="card-icon-wrap">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-      </div>
-      <div class="card-title">CRM Decizii</div>
-      <div class="card-desc">Urmărirea deciziilor de decontare dispozitive medicale.</div>
-      <div class="card-footer">
-        <div class="card-cta">Accesează</div>
-        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-      </div>
-    </a>
-
-    <a class="app-card" href="https://1stmedica.github.io/crm-vanzari/" target="_blank">
-      <div class="card-num">— 04</div>
-      <div class="card-icon-wrap">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
-      </div>
-      <div class="card-title">CRM Vânzări</div>
-      <div class="card-desc">Captarea și urmărirea oportunităților de vânzări.</div>
-      <div class="card-footer">
-        <div class="card-cta">Accesează</div>
-        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
-      </div>
-    </a>
-
-  </div>
-
-  <div class="footer">
-    <div class="footer-txt">© 2026 1st Medica · Acces restricționat</div>
-    <div class="f-dots">
-      <div class="f-dot on"></div>
-      <div class="f-dot"></div>
-      <div class="f-dot"></div>
-      <div class="f-dot"></div>
+    <div class="form-row">
+      <div class="form-lbl">Parola</div>
+      <input id="loginPass" type="password" placeholder="••••••••" class="form-inp" onkeydown="if(event.key==='Enter')window.signInApp()">
     </div>
-    <div class="footer-txt">Sistem intern v1.0</div>
+    <button id="loginBtn" onclick="window.signInApp()" style="width:100%;padding:11px;border:none;border-radius:var(--rs);background:var(--teal);color:white;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer;transition:background .15s" onmouseover="this.style.background='#0a5442'" onmouseout="this.style.background='var(--teal)'">
+      Conecteaza-te
+    </button>
+    <div id="loginErr" style="margin-top:12px;font-size:12px;color:var(--red);text-align:center;display:none"></div>
+    <div style="margin-top:16px;font-size:11px;color:var(--t3);text-align:center">Contacteaza administratorul pentru acces</div>
   </div>
-
 </div>
+
+<!-- APP -->
+<div id="appContainer" style="display:none;width:100%">
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="slogo" style="position:relative">
+    <div class="lmark">
+      <div class="lic"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" style="width:18px;height:18px"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/><circle cx="12" cy="13" r="2"/></svg></div>
+      <div><div class="ltxt">CRM Decizii</div><div class="lsub">v1.0 · Firebase</div></div>
+    </div>
+    <button class="hamb-close" onclick="closeSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+  </div>
+  <nav class="nav">
+    <div class="nlbl">Principal</div>
+    <div class="ni active" id="nav-dashboard" onclick="showPage('dashboard',this);closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard
+    </div>
+    <div class="ni" id="nav-jurnal" onclick="showPage('jurnal',this);closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>Fise Pacienti
+    </div>
+    <div class="nlbl">Alerte</div>
+    <div class="ni" id="nav-alerte" onclick="showPage('alerte',this);closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>Alerte active
+      <span id="alertBadge" style="background:var(--red);color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;margin-left:auto;display:none">0</span>
+    </div>
+    <div class="ni" id="nav-remindere" onclick="showPage('remindere',this);closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><circle cx="12" cy="16" r="2" fill="currentColor" stroke="none"/></svg>Remindere complianta
+      <span id="remBadge" style="background:var(--purple);color:#fff;border-radius:20px;font-size:10px;padding:1px 6px;margin-left:auto;display:none">0</span>
+    </div>
+    <div class="nlbl">Date</div>
+    <div class="ni" id="nav-import" onclick="showPage('import',this);closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import AttoSoft
+    </div>
+    <div class="ni" id="nav-settings" onclick="showPage('settings',this);closeSidebar()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 003.52 18.09M4.93 4.93A10 10 0 0120.48 18.09"/></svg>Setari
+    </div>
+  </nav>
+  <div class="sfooter">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid var(--border)">
+      <div id="userAvatar" style="width:28px;height:28px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0">?</div>
+      <div id="userInfo" style="flex:1;min-width:0;font-size:11px;color:var(--t3)">Se incarca...</div>
+      <button onclick="window.signOut()" title="Deconectare" style="background:none;border:none;cursor:pointer;color:var(--t3);padding:4px;border-radius:4px" onmouseover="this.style.color='var(--red)'" onmouseout="this.style.color='var(--t3)'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+    </div>
+    <div id="dbStatus" style="font-size:10px;color:var(--t3)"><span style="color:var(--amber)">&#9679;</span> Se conecteaza...</div>
+  </div>
+</aside>
+
+<main class="main">
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button class="hamb" onclick="toggleSidebar()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+      <div class="ptitle" id="ptitle">Dashboard</div>
+    </div>
+    <div class="tactions">
+      <button class="btn btnt" onclick="showPage('import',document.getElementById('nav-import'))">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>Import
+      </button>
+    </div>
+  </div>
+  <div class="content">
+
+  <!-- ═══════════════ DASHBOARD ═══════════════ -->
+  <div class="page active" id="page-dashboard">
+    <div class="mgrid8">
+      <div class="mc teal" onclick="openDashList('active')">
+        <div class="mlbl">Decizii active</div>
+        <div class="mval" id="d-active">-</div>
+        <div class="msub">in termen</div>
+      </div>
+      <div class="mc amber" onclick="openDashList('exp30')">
+        <div class="mlbl">Expira in 30 zile</div>
+        <div class="mval" id="d-exp30">-</div>
+        <div class="msub">de notificat</div>
+      </div>
+      <div class="mc orange" onclick="openDashList('exp10')">
+        <div class="mlbl">Expira in 10 zile</div>
+        <div class="mval" id="d-exp10">-</div>
+        <div class="msub">urgent</div>
+      </div>
+      <div class="mc red" onclick="openDashList('dep')">
+        <div class="mlbl">Depasite</div>
+        <div class="mval" id="d-dep">-</div>
+        <div class="msub">alerte active</div>
+      </div>
+      <div class="mc red" onclick="openDashList('necomp')">
+        <div class="mlbl">Necompliant</div>
+        <div class="mval" id="d-necomp">-</div>
+        <div class="msub">nu raspunde</div>
+      </div>
+      <div class="mc purple" onclick="openDashList('urm')">
+        <div class="mlbl">Urmarire complianta</div>
+        <div class="mval" id="d-urm">-</div>
+        <div class="msub">scadente azi</div>
+      </div>
+      <div class="mc gray" onclick="openDashList('rez')">
+        <div class="mlbl">Reziliate</div>
+        <div class="mval" id="d-rez">-</div>
+        <div class="msub">contracte incheiate</div>
+      </div>
+      <div class="mc blue" onclick="openDashList('priv')">
+        <div class="mlbl">Plata privata</div>
+        <div class="mval" id="d-priv">-</div>
+        <div class="msub">fara decizie CNAS</div>
+      </div>
+    </div>
+    <div class="g3">
+      <div class="card">
+        <div class="ch"><div><div class="ct">Decizii depasite — top 10</div><div class="cs">click pe header pentru sortare</div></div></div>
+        <div class="tw"><table><thead><tr><th>#</th><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Zile depasire</th><th>Ultima alerta</th></tr></thead><tbody id="tTop5"></tbody></table></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div class="card">
+          <div class="ch"><div class="ct">Aging — zile depasire</div></div>
+          <div style="padding:14px 18px">
+            <div id="agingGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px"></div>
+            <div style="position:relative;height:140px;width:100%"><canvas id="agingChart"></canvas></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="ch"><div class="ct">Alerte scadente azi</div></div>
+          <div id="alerteAzi" style="padding:14px 18px;font-size:13px;color:var(--t3)">Nicio alerta scadenta azi.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ JURNAL / FISE PACIENTI ═══════════════ -->
+  <div class="page" id="page-jurnal">
+    <div class="jlay">
+      <div class="plist">
+        <div class="plh">
+          <input class="plsearch" placeholder="Cauta pacient..." oninput="filterPL(this.value)" id="plSearch">
+          <div style="font-size:11px;color:var(--t3);margin-top:6px" id="plCount"></div>
+        </div>
+        <div class="pli" id="pacientList"></div>
+      </div>
+      <div class="jmain" id="jmain">
+        <div class="empty"><div class="etl">Selecteaza un pacient din lista</div><div>Click pe un pacient pentru a vedea fisa si istoricul deciziilor</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ ALERTE ═══════════════ -->
+  <div class="page" id="page-alerte">
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+      <input type="text" class="fi" id="searchAlerte" placeholder="🔍 Cauta pacient, CNP, aparat..." oninput="renderAlerte()" style="min-width:220px">
+      <select class="fi" id="filtTipAlerta" onchange="renderAlerte()">
+        <option value="">Toate tipurile</option>
+        <option value="pre-expirare-30">Pre-expirare 30 zile</option>
+        <option value="pre-expirare-10">Pre-expirare 10 zile</option>
+        <option value="depasire-10">Depasire prima</option>
+        <option value="depasire-recurenta">Depasire recurenta</option>
+        <option value="complianta">Complianta</option>
+      </select>
+      <select class="fi" id="filtStatusAlerta" onchange="renderAlerte()">
+        <option value="activa">Active</option>
+        <option value="trimisa">Trimise</option>
+        <option value="inchisa">Inchise</option>
+        <option value="">Toate</option>
+      </select>
+      <button class="btn btnt" onclick="openNotifMasa()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.08 19.79 19.79 0 01.01 2.22 2 2 0 012 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91"/></svg>
+        Trimite notificari in masa
+      </button>
+    </div>
+    <div class="card">
+      <div class="ch"><div><div class="ct" id="alerteTitlu">Alerte active</div><div class="cs" id="alerteSubtitlu"></div></div></div>
+      <div class="tw"><table>
+        <thead><tr><th><input type="checkbox" id="chkAll" onchange="toggleAllAlerte(this.checked)"></th><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Tip alerta</th><th>Data expirare</th><th>Zile</th><th>Status</th><th>Actiuni</th></tr></thead>
+        <tbody id="tAlerte"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ REMINDERE ═══════════════ -->
+  <div class="page" id="page-remindere">
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <input type="text" class="fi" id="searchRemindere" placeholder="🔍 Cauta pacient, CNP, agent..." oninput="renderRemindere()" style="min-width:220px">
+      <select class="fi" id="filtRem" onchange="renderRemindere()">
+        <option value="">Toate</option>
+        <option value="pending">Nerezolvate</option>
+        <option value="done">Rezolvate</option>
+        <option value="overdue">Depasite</option>
+      </select>
+      <input type="date" class="fi" id="filtRemData" onchange="renderRemindere()">
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Remindere complianta</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Data urmarire</th><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Agent</th><th>Status</th><th>Actiuni</th></tr></thead>
+        <tbody id="tRemindere"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ IMPORT ═══════════════ -->
+  <div class="page" id="page-import">
+    <div class="iz" id="izone" ondrop="doDrop(event)" ondragover="e=>{e.preventDefault();document.getElementById('izone').classList.add('drag')}" ondragleave="document.getElementById('izone').classList.remove('drag')" onclick="document.getElementById('fi').click()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" style="width:40px;height:40px;margin-bottom:12px"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      <div style="font-size:15px;font-weight:500;margin-bottom:6px">Trage fisierul Excel aici sau click pentru selectare</div>
+      <div style="font-size:12px;color:var(--t3)">Export "Raport decizii pacient" din AttoSoft · Format .xlsx</div>
+      <input type="file" id="fi" accept=".xlsx,.xls" onchange="handleFile(this.files[0])">
+    </div>
+    <div id="prevSec" style="display:none">
+      <div class="card" style="margin-bottom:16px">
+        <div class="ch"><div><div class="ct" id="prevTitlu">Previzualizare import</div><div class="cs" id="prevSubtitlu"></div></div></div>
+        <div class="tw" style="max-height:400px;overflow-y:auto"><table>
+          <thead><tr><th>Pacient</th><th>CNP</th><th>Judet</th><th>Nr. decizie</th><th>Aparat</th><th>Tarif lunar</th><th>Data emitere</th><th>Data expirare</th><th>Luni val.</th><th>Casa asig.</th><th>Status</th></tr></thead>
+          <tbody id="tPrev"></tbody>
+        </table></div>
+      </div>
+      <div id="prevWarn" style="margin-bottom:14px"></div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btnt" onclick="doImport()" id="btnImport">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Confirma importul
+        </button>
+        <button class="btn" onclick="resetImport()">Anuleaza</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="ch"><div class="ct">Istoric importuri</div></div>
+      <div class="tw"><table>
+        <thead><tr><th>Data</th><th>Fisier</th><th>Randuri</th><th>Pacienti noi</th><th>Decizii actualizate</th><th>Importat de</th></tr></thead>
+        <tbody id="tImpHist"><tr><td colspan="6"><div class="empty">Niciun import efectuat</div></td></tr></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SETTINGS ═══════════════ -->
+  <div class="page" id="page-settings">
+    <div class="g2">
+      <div class="card">
+        <div class="ch"><div class="ct">Configurare generala</div></div>
+        <div class="cw">
+          <div class="form-row"><div class="form-lbl">Luni valabilitate default (cand lipseste din Excel)</div><input type="number" id="sLuniDef" class="form-inp" value="3" min="1" max="24"></div>
+          <div class="form-row"><div class="form-lbl">Interval alerte recurente (zile)</div><input type="number" id="sInterval" class="form-inp" value="15" min="7" max="60"></div>
+          <button class="btn btnt" onclick="saveSettings()">Salveaza configurare</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ct">Configurare EmailJS</div></div>
+        <div class="cw">
+          <div class="form-row"><div class="form-lbl">Service ID</div><input type="text" id="sEmailSvc" class="form-inp" placeholder="service_xxxxxx"></div>
+          <div class="form-row"><div class="form-lbl">Template ID</div><input type="text" id="sEmailTpl" class="form-inp" placeholder="template_xxxxxx"></div>
+          <div class="form-row"><div class="form-lbl">Public Key</div><input type="text" id="sEmailKey" class="form-inp" placeholder="AeZwH6..."></div>
+          <button class="btn btnt" onclick="saveSettings()">Salveaza EmailJS</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Template mesaj email</div></div>
+      <div class="cw">
+        <div style="font-size:12px;color:var(--t3);margin-bottom:8px">Variabile disponibile: {NUME}, {NR_DECIZIE}, {COD_APARAT}, {DATA_EXPIRARE}, {ZILE_RAMASE}, {AGENT}</div>
+        <textarea id="sTplEmail" class="form-inp" style="height:140px">Stimate/Stimata {NUME},
+
+Va informam ca decizia de decontare nr. {NR_DECIZIE} pentru aparatul {COD_APARAT} expira in data de {DATA_EXPIRARE} ({ZILE_RAMASE} zile ramase).
+
+Va rugam sa contactati medicul prescriptor pentru reinnoire.
+
+Cu respect,
+{AGENT}
+1stMedica SRL</textarea>
+        <div class="form-row" style="margin-top:12px"><div class="form-lbl">Template SMS/WhatsApp</div>
+        <textarea id="sTplSms" class="form-inp" style="height:80px">Buna ziua {NUME}! Decizia dvs. de decontare {COD_APARAT} expira pe {DATA_EXPIRARE}. Va rugam sa contactati medicul. 1stMedica: 0800 xxx xxx</textarea></div>
+        <button class="btn btnt" onclick="saveSettings()">Salveaza template-uri</button>
+      </div>
+    </div>
+  </div>
+
+  </div><!-- end content -->
+</main>
+</div><!-- end app -->
+</div><!-- end appContainer -->
+
+<!-- ══════ MODAL NOTIFICARE INDIVIDUALA ══════ -->
+<div class="mbg" id="modalNotif">
+  <div class="modal">
+    <div class="mh"><span class="mtl" id="notifTitlu">Notificare pacient</span><button class="bcl" onclick="closeModal('modalNotif')">&times;</button></div>
+    <div class="mb">
+      <div class="notif-canal">
+        <button class="notif-btn active" id="canalEmail" onclick="setCanal('email')">📧 Email</button>
+        <button class="notif-btn" id="canalSms" onclick="setCanal('sms')">📱 SMS</button>
+        <button class="notif-btn" id="canalWa" onclick="setCanal('whatsapp')">💬 WhatsApp</button>
+      </div>
+      <div id="notifEmailSec">
+        <div class="form-row"><div class="form-lbl">Catre (email)</div><input type="text" id="notifEmail" class="form-inp" placeholder="email@pacient.ro"></div>
+        <div class="form-row"><div class="form-lbl">Subiect</div><input type="text" id="notifSubiect" class="form-inp"></div>
+        <div class="form-row"><div class="form-lbl">Mesaj</div><textarea id="notifMesaj" class="form-inp" style="height:160px"></textarea></div>
+      </div>
+      <div id="notifSmsSec" style="display:none">
+        <div class="form-row"><div class="form-lbl">Numar telefon</div><input type="text" id="notifTel" class="form-inp" readonly></div>
+        <div class="form-row"><div class="form-lbl">Mesaj SMS</div><textarea id="notifMesajSms" class="form-inp" style="height:100px"></textarea></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalNotif')">Anuleaza</button>
+      <button class="btn btnt" onclick="sendNotif()" id="btnSendNotif">Trimite</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL NOTIFICARI IN MASA ══════ -->
+<div class="mbg" id="modalMasa">
+  <div class="modal" style="width:700px">
+    <div class="mh"><span class="mtl">Notificari in masa</span><button class="bcl" onclick="closeModal('modalMasa')">&times;</button></div>
+    <div class="mb">
+      <div id="masaInfo" style="margin-bottom:14px;font-size:13px;color:var(--t2)"></div>
+      <div class="notif-canal">
+        <button class="notif-btn active" id="masaCanalEmail" onclick="setMasaCanal('email')">📧 Email</button>
+        <button class="notif-btn" id="masaCanalSms" onclick="setMasaCanal('sms')">📱 SMS</button>
+        <button class="notif-btn" id="masaCanalWa" onclick="setMasaCanal('whatsapp')">💬 WhatsApp</button>
+      </div>
+      <div id="masaEmailSec">
+        <div class="form-row"><div class="form-lbl">Subiect email</div><input type="text" id="masaSubiect" class="form-inp" value="Decizie decontare — reinnoire necesara"></div>
+        <div class="form-row"><div class="form-lbl">Mesaj (se personalizeaza automat per pacient)</div><textarea id="masaMesaj" class="form-inp" style="height:120px"></textarea></div>
+      </div>
+      <div id="masaSmsSec" style="display:none">
+        <div class="form-row"><div class="form-lbl">Mesaj SMS/WhatsApp</div><textarea id="masaMesajSms" class="form-inp" style="height:100px"></textarea></div>
+      </div>
+      <div id="masaProgress" style="display:none;margin-top:12px">
+        <div style="height:6px;background:var(--bg);border-radius:3px;overflow:hidden"><div id="masaBar" style="height:100%;background:var(--teal);width:0%;transition:width .3s"></div></div>
+        <div id="masaLabel" style="font-size:12px;color:var(--t3);margin-top:6px">Se trimite...</div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalMasa')">Inchide</button>
+      <button class="btn btnt" onclick="doSendMasa()" id="btnSendMasa">Trimite tuturor selectatilor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL DASHBOARD LIST ══════ -->
+<div class="mbg" id="modalDashList">
+  <div class="modal" style="width:780px">
+    <div class="mh"><span class="mtl" id="dashListTitlu">Lista pacienti</span><button class="bcl" onclick="closeModal('modalDashList')">&times;</button></div>
+    <div class="mb" style="padding:0">
+      <div class="tw" style="max-height:500px;overflow-y:auto"><table>
+        <thead id="dashListHead"></thead>
+        <tbody id="dashListBody"></tbody>
+      </table></div>
+    </div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalDashList')">Inchide</button>
+      <button class="btn btnt" id="btnDashNotifMasa" style="display:none" onclick="closeModal('modalDashList');openNotifMasa()">Notificari in masa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ MODAL ACTIUNE PACIENT ══════ -->
+<div class="mbg" id="modalActiune">
+  <div class="modal" style="width:480px">
+    <div class="mh"><span class="mtl" id="actTitlu">Actiune pacient</span><button class="bcl" onclick="closeModal('modalActiune')">&times;</button></div>
+    <div class="mb" id="actBody"></div>
+    <div class="mf">
+      <button class="btn" onclick="closeModal('modalActiune')">Anuleaza</button>
+      <button class="btn" id="btnActOk" onclick="execActiune()">Confirma</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ════════════════════════════════════════════════
+// CONSTANTE SI CONFIGURARE
+// ════════════════════════════════════════════════
+const PAGES = {dashboard:'Dashboard',jurnal:'Fise Pacienti',alerte:'Alerte Active',remindere:'Remindere Complianta',import:'Import AttoSoft',settings:'Setari'};
+
+// Mapare tarif -> cod aparat
+const TARIF_MAP = {202:'K02',230:'K041',277:'K042',400:'K051',459:'K052',583:'K054',826:'K053',847:'K03',920:'K021',1300:'K06'};
+const TARIFE_EXCLUSE = [712,732,832];
+
+// Stare globala
+let PACIENTI = {};   // {cnp: {...date pacient}}
+let DECIZII = {};    // {id_decizie: {...date decizie}}
+let JURNAL = {};     // {cnp: [{tip,text,data,agent,...}]}
+let ALERTE = {};     // {id_alerta: {...}}
+let REMINDERE = [];  // [{...}]
+let CFG = {luni_valabilitate_default:3, interval_recurenta_zile:15, emailjs_service_id:'service_mtgppoa', emailjs_template_id:'', emailjs_public_key:'AeZwH6rd5SleiqMQc', template_email:'', template_sms:''};
+
+let currentUser = null;
+let selCnp = null;
+let notifTarget = null;
+let actiuneTarget = null;
+let masaCanal = 'email';
+let notifCanal = 'email';
+let pendingImport = null;
+let agingChartInst = null;
+
+// Stare sortare tabele
+let sortAlerte = {col:'data_alerta', dir:-1};
+let sortRemindere = {col:'data', dir:1};
+
+// ════════════════════════════════════════════════
+// AUTH
+// ════════════════════════════════════════════════
+function startAuthListener(){
+  if(!window.auth) return;
+  window.auth.onAuthStateChanged(function(user){
+    if(user){
+      currentUser = user;
+      document.getElementById('loginScreen').style.display='none';
+      document.getElementById('appContainer').style.display='block';
+      const initials = (user.displayName||user.email||'?').split(/[\s@]/)[0].slice(0,2).toUpperCase();
+      document.getElementById('userAvatar').textContent = initials;
+      document.getElementById('userInfo').textContent = user.displayName||user.email;
+      loadAll();
+    } else {
+      currentUser = null;
+      document.getElementById('loginScreen').style.display='flex';
+      document.getElementById('appContainer').style.display='none';
+    }
+  });
+}
+
+window._signInImpl = function(){
+  var email = document.getElementById('loginEmail').value.trim();
+  var pass = document.getElementById('loginPass').value;
+  if(!email||!pass){toast('Completeaza email si parola','error');return;}
+  if(!window.auth){
+    var e2=document.getElementById('loginErr');
+    if(e2){e2.style.display='block';e2.textContent='Firebase se incarca, incearca din nou in 2 secunde...';}
+    return;
+  }
+  var btn=document.getElementById('loginBtn');
+  var err=document.getElementById('loginErr');
+  if(err)err.style.display='none';
+  if(btn){btn.textContent='Se conecteaza...';btn.disabled=true;}
+  window.auth.signInWithEmailAndPassword(email,pass)
+    .then(function(r){showApp(r.user);})
+    .catch(function(e){
+      var msg='Email sau parola incorecta';
+      if(e.code==='auth/too-many-requests')msg='Prea multe incercari. Incearca mai tarziu.';
+      if(e.code==='auth/user-not-found')msg='Utilizator inexistent.';
+      if(e.code==='auth/network-request-failed')msg='Eroare retea.';
+      if(err){err.style.display='block';err.textContent=msg;}
+      toast(msg,'error');
+      if(btn){btn.textContent='Conecteaza-te';btn.disabled=false;}
+    });
+};
+function showApp(user){currentUser=user;}
+
+window._signOutImpl = function(){
+  if(!window.auth)return;
+  window.auth.signOut().then(function(){toast('Deconectat');});
+};
+
+// ════════════════════════════════════════════════
+// LOAD / SAVE FIRESTORE
+// ════════════════════════════════════════════════
+function loadAll(){
+  if(!window.db){window._fbQueue.push(loadAll);return;}
+  updateDbStatus('Se incarca datele...');
+  const p1 = window.db.collection('pacienti').get();
+  const p2 = window.db.collection('decizii').get();
+  const p3 = window.db.collection('jurnal').get();
+  const p4 = window.db.collection('alerte').get();
+  const p5 = window.db.collection('remindere').get();
+  const p6 = window.db.collection('settings').doc('config').get();
+  Promise.all([p1,p2,p3,p4,p5,p6]).then(function([sp,sd,sj,sa,sr,scfg]){
+    PACIENTI={};sp.forEach(d=>{PACIENTI[d.id]={id:d.id,...d.data()};});
+    DECIZII={};sd.forEach(d=>{DECIZII[d.id]={id:d.id,...d.data()};});
+    JURNAL={};sj.forEach(d=>{const x=d.data();if(x.cnp&&x.note)JURNAL[x.cnp]=x.note;});
+    ALERTE={};sa.forEach(d=>{ALERTE[d.id]={id:d.id,...d.data()};});
+    REMINDERE=[];sr.forEach(d=>{
+      const x={id:d.id,...d.data()};
+      if(x.cnp_pacient) REMINDERE.push(x); // ignora remindere fara CNP valid
+    });
+    if(scfg.exists)CFG={...CFG,...scfg.data()};
+    loadSettingsUI();
+    checkAndGenerateAlerte();
+    renderDB();
+    renderPL();
+    renderAlerte();
+    renderRemindere();
+    updateBadges();
+    updateDbStatus('conectat');
+  }).catch(function(e){
+    console.warn('Load error:',e);
+    updateDbStatus('eroare: '+e.message);
+  });
+  // Istoricul importuri
+  window.db.collection('imports').orderBy('ts','desc').limit(10).get().then(function(s){
+    const tb=document.getElementById('tImpHist');
+    if(!s.empty){
+      tb.innerHTML='';
+      s.forEach(d=>{
+        const x=d.data();
+        tb.insertAdjacentHTML('beforeend',`<tr><td>${fdt(x.ts)}</td><td>${x.fisier||'-'}</td><td>${x.randuri||'-'}</td><td>${x.pacienti_noi||'-'}</td><td>${x.decizii_actualizate||'-'}</td><td>${x.agent||'-'}</td></tr>`);
+      });
+    }
+  }).catch(()=>{});
+}
+
+function updateDbStatus(msg){
+  const el=document.getElementById('dbStatus');
+  if(!el)return;
+  if(msg==='conectat') el.innerHTML='<span style="color:var(--green)">&#9679;</span> Firebase conectat';
+  else el.innerHTML='<span style="color:var(--amber)">&#9679;</span> '+msg;
+}
+
+function savePacient(cnp, data){
+  if(!window.db)return;
+  return window.db.collection('pacienti').doc(cnp).set(data,{merge:true});
+}
+function saveDecizie(id, data){
+  if(!window.db)return;
+  return window.db.collection('decizii').doc(id).set(data,{merge:true});
+}
+function saveAlerta(id, data){
+  if(!window.db)return;
+  return window.db.collection('alerte').doc(id).set(data,{merge:true});
+}
+function saveJurnal(cnp){
+  if(!window.db)return;
+  return window.db.collection('jurnal').doc(cnp).set({cnp,note:JURNAL[cnp]||[],updatedAt:firebase.firestore.FieldValue.serverTimestamp()},{merge:true});
+}
+function saveReminder(r){
+  if(!window.db||!r.id)return;
+  return window.db.collection('remindere').doc(r.id).set(r,{merge:true});
+}
+function saveSettings(){
+  CFG.luni_valabilitate_default = parseInt(document.getElementById('sLuniDef').value)||3;
+  CFG.interval_recurenta_zile = parseInt(document.getElementById('sInterval').value)||15;
+  CFG.emailjs_service_id = document.getElementById('sEmailSvc').value.trim();
+  CFG.emailjs_template_id = document.getElementById('sEmailTpl').value.trim();
+  CFG.emailjs_public_key = document.getElementById('sEmailKey').value.trim();
+  CFG.template_email = document.getElementById('sTplEmail').value;
+  CFG.template_sms = document.getElementById('sTplSms').value;
+  if(window.db) window.db.collection('settings').doc('config').set(CFG,{merge:true}).then(()=>toast('Setari salvate','success')).catch(e=>toast('Eroare: '+e.message,'error'));
+  else toast('Firebase indisponibil','error');
+}
+function loadSettingsUI(){
+  document.getElementById('sLuniDef').value = CFG.luni_valabilitate_default||3;
+  document.getElementById('sInterval').value = CFG.interval_recurenta_zile||15;
+  document.getElementById('sEmailSvc').value = CFG.emailjs_service_id||'';
+  document.getElementById('sEmailTpl').value = CFG.emailjs_template_id||'';
+  document.getElementById('sEmailKey').value = CFG.emailjs_public_key||'';
+  if(CFG.template_email) document.getElementById('sTplEmail').value = CFG.template_email;
+  if(CFG.template_sms) document.getElementById('sTplSms').value = CFG.template_sms;
+}
+
+// ════════════════════════════════════════════════
+// LOGICA ALERTE — GENERARE AUTOMATA
+// ════════════════════════════════════════════════
+function checkAndGenerateAlerte(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+  const batch = [];
+
+  Object.values(DECIZII).forEach(function(dec){
+    if(dec.status !== 'activa') return;
+    const pac = PACIENTI[dec.cnp_pacient];
+    if(!pac || pac.status === 'reziliat' || pac.status === 'privat') return;
+
+    const exp = new Date(dec.data_expirare); exp.setHours(0,0,0,0);
+    const diff = Math.round((exp - today) / 86400000); // zile pozitiv = ramase, negativ = depasite
+
+    // Pacient necompliant — nu generam alerte de expirare
+    if(pac.status === 'necompliant') return;
+
+    // PRE-EXPIRARE 30
+    if(diff === 30){
+      const aid = 'pre30_'+dec.id+'_'+todayStr;
+      if(!ALERTE[aid]){
+        const a={id:aid,cnp_pacient:dec.cnp_pacient,id_decizie:dec.id,tip:'pre-expirare-30',data_alerta:todayStr,status:'activa',motiv_inchidere:'',agent:''};
+        ALERTE[aid]=a;batch.push(saveAlerta(aid,a));
+      }
+    }
+    // PRE-EXPIRARE 10
+    if(diff === 10 && diff > 0){
+      const aid = 'pre10_'+dec.id+'_'+todayStr;
+      if(!ALERTE[aid]){
+        const a={id:aid,cnp_pacient:dec.cnp_pacient,id_decizie:dec.id,tip:'pre-expirare-10',data_alerta:todayStr,status:'activa',motiv_inchidere:'',agent:''};
+        ALERTE[aid]=a;batch.push(saveAlerta(aid,a));
+      }
+    }
+    // DEPASIRE PRIMA (la -10 zile)
+    if(diff === -10){
+      const aid = 'dep10_'+dec.id;
+      if(!ALERTE[aid]){
+        const a={id:aid,cnp_pacient:dec.cnp_pacient,id_decizie:dec.id,tip:'depasire-10',data_alerta:todayStr,status:'activa',motiv_inchidere:'',agent:''};
+        ALERTE[aid]=a;batch.push(saveAlerta(aid,a));
+      }
+    }
+    // DEPASIRE RECURENTA (din 15 in 15 zile dupa -10)
+    if(diff < -10){
+      const zileDep = Math.abs(diff);
+      const interval = CFG.interval_recurenta_zile || 15;
+      // Generam la -10, -25, -40, ... (adica la 10+N*interval)
+      const nrAlerta = Math.floor((zileDep - 10) / interval);
+      if(nrAlerta > 0 && (zileDep - 10) % interval === 0){
+        const aid = 'deprec_'+dec.id+'_'+nrAlerta;
+        if(!ALERTE[aid]){
+          const a={id:aid,cnp_pacient:dec.cnp_pacient,id_decizie:dec.id,tip:'depasire-recurenta',data_alerta:todayStr,status:'activa',motiv_inchidere:'',agent:''};
+          ALERTE[aid]=a;batch.push(saveAlerta(aid,a));
+        }
+      }
+    }
+  });
+
+  // ALERTE COMPLIANTA — din remindere
+  REMINDERE.filter(r=>r.tip==='complianta'&&r.status==='pending'&&r.data<=todayStr).forEach(function(r){
+    const aid = 'comp_rem_'+r.id;
+    if(!ALERTE[aid]){
+      const a={id:aid,cnp_pacient:r.cnp_pacient,id_decizie:r.id_decizie||'',tip:'complianta',data_alerta:todayStr,status:'activa',motiv_inchidere:'',agent:''};
+      ALERTE[aid]=a;batch.push(saveAlerta(aid,a));
+    }
+  });
+
+  Promise.all(batch).then(function(){if(batch.length>0){renderAlerte();updateBadges();}});
+}
+
+function closeAlerteDecizie(id_decizie, motiv){
+  Object.values(ALERTE).filter(a=>a.id_decizie===id_decizie&&a.status==='activa').forEach(function(a){
+    a.status='inchisa'; a.motiv_inchidere=motiv;
+    saveAlerta(a.id, a);
+  });
+}
+
+// ════════════════════════════════════════════════
+// DASHBOARD
+// ════════════════════════════════════════════════
+// Stare sortare Top5 dashboard
+let sortTop5 = {col:'zile', dir:-1};
+
+let _renderDBTimer = null;
+function renderDB(){
+  clearTimeout(_renderDBTimer);
+  _renderDBTimer = setTimeout(_renderDBImpl, 150);
+}
+function _renderDBImpl(){
+  const dashPage = document.getElementById('page-dashboard');
+  if(!dashPage || !dashPage.classList.contains('active')) return;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+  const in30 = new Date(today); in30.setDate(in30.getDate()+30);
+  const in10 = new Date(today); in10.setDate(in10.getDate()+10);
+
+  const decActive = Object.values(DECIZII).filter(d=>d.status==='activa');
+  const exp30 = decActive.filter(d=>new Date(d.data_expirare)>=today&&new Date(d.data_expirare)<=in30);
+  const exp10 = decActive.filter(d=>new Date(d.data_expirare)>=today&&new Date(d.data_expirare)<=in10);
+  const dep = Object.values(ALERTE).filter(a=>a.status==='activa'&&(a.tip==='depasire-10'||a.tip==='depasire-recurenta'));
+  const necomp = Object.values(PACIENTI).filter(p=>p.status==='necompliant');
+  const urm = REMINDERE.filter(r=>r.tip==='complianta'&&r.status==='pending'&&r.data<=todayStr);
+  const rez = Object.values(PACIENTI).filter(p=>p.status==='reziliat');
+  const priv = Object.values(PACIENTI).filter(p=>p.status==='privat');
+
+  // Actualizeaza doar textul cardurilor — fara reflow
+  const set = (id,v) => { const el=document.getElementById(id); if(el&&el.textContent!=String(v)) el.textContent=v; };
+  set('d-active', decActive.length);
+  set('d-exp30', exp30.length);
+  set('d-exp10', exp10.length);
+  set('d-dep', dep.length);
+  set('d-necomp', necomp.length);
+  set('d-urm', urm.length);
+  set('d-rez', rez.length);
+  set('d-priv', priv.length);
+
+  // TOP 5 cu sortare
+  renderTop5(dep, today);
+
+  // Aging chart — doar update date, fara recreare
+  const buckets = [0,0,0,0];
+  Object.values(DECIZII).filter(d=>d.status==='activa'||d.status==='expirata').forEach(d=>{
+    const diff = Math.round((today-new Date(d.data_expirare))/86400000);
+    if(diff<0)return;
+    if(diff<=30)buckets[0]++;
+    else if(diff<=60)buckets[1]++;
+    else if(diff<=90)buckets[2]++;
+    else buckets[3]++;
+  });
+  const lbls = ['0-30 zile','31-60 zile','61-90 zile','90+ zile'];
+  const cols = ['var(--amber)','var(--orange)','var(--red)','#7a1f1f'];
+
+  // Aging grid — actualizeaza doar valorile numerice
+  const agG = document.getElementById('agingGrid');
+  if(agG && agG.children.length===4){
+    buckets.forEach((v,i)=>{ agG.children[i].querySelector('div').textContent=v; });
+  } else if(agG) {
+    agG.innerHTML = buckets.map((v,i)=>`<div style="background:var(--bg);border-radius:var(--rs);padding:8px 10px;border-left:3px solid ${cols[i]}"><div style="font-size:18px;font-weight:600;color:${cols[i]}">${v}</div><div style="font-size:10px;color:var(--t3)">${lbls[i]}</div></div>`).join('');
+  }
+
+  if(agingChartInst){
+    agingChartInst.data.datasets[0].data = buckets;
+    agingChartInst.update('none');
+  } else {
+    const ctx = document.getElementById('agingChart').getContext('2d');
+    agingChartInst = new Chart(ctx,{type:'doughnut',data:{labels:lbls,datasets:[{data:buckets,backgroundColor:['#FAEEDA','#fdf0e8','#FCEBEB','#f5c6c6'],borderColor:cols,borderWidth:2}]},options:{animation:false,responsive:true,maintainAspectRatio:false,onResize:null,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}},cutout:'65%'}});
+  }
+
+  // Alerte scadente azi
+  const azEl = document.getElementById('alerteAzi');
+  const azA = Object.values(ALERTE).filter(a=>a.status==='activa'&&a.data_alerta===todayStr);
+  if(!azA.length){azEl.innerHTML='<div style="color:var(--t3)">Nicio alerta scadenta azi.</div>';}
+  else {
+    azEl.innerHTML = azA.slice(0,5).map(a=>{
+      const pac=PACIENTI[a.cnp_pacient];
+      const dec=DECIZII[a.id_decizie];
+      return `<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="goToFisa('${a.cnp_pacient}')">
+        ${tipAlertaBadge(a.tip)}
+        <span style="font-size:13px;font-weight:500">${pac?pac.nume:a.cnp_pacient}</span>
+        <span style="font-size:12px;color:var(--t3)">${dec?dec.cod_aparat||'':''}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+function sortTop5Icon(col){
+  if(sortTop5.col!==col) return '<span style="color:var(--t3);font-size:10px"> ⇅</span>';
+  return sortTop5.dir===1?'<span style="color:var(--teal);font-size:10px"> ↑</span>':'<span style="color:var(--teal);font-size:10px"> ↓</span>';
+}
+
+function sortTop5Col(col){
+  if(sortTop5.col===col) sortTop5.dir*=-1; else {sortTop5.col=col;sortTop5.dir=1;}
+  const today = new Date(); today.setHours(0,0,0,0);
+  const dep = Object.values(ALERTE).filter(a=>a.status==='activa'&&(a.tip==='depasire-10'||a.tip==='depasire-recurenta'));
+  renderTop5(dep, today);
+}
+
+function renderTop5(dep, today){
+  const depCnp = [...new Set(dep.map(a=>a.cnp_pacient))];
+  let top5 = depCnp.map(cnp=>{
+    const decizii = Object.values(DECIZII).filter(d=>d.cnp_pacient===cnp&&d.status==='activa');
+    const maxDep = Math.max(0,...decizii.map(d=>{const diff=Math.round((today-new Date(d.data_expirare))/86400000);return diff>0?diff:0;}));
+    const lastAlert = Object.values(ALERTE).filter(a=>a.cnp_pacient===cnp&&a.status==='activa').sort((a,b)=>b.data_alerta.localeCompare(a.data_alerta))[0];
+    const pac = PACIENTI[cnp];
+    return {cnp, pac, decizii, maxDep, lastAlert};
+  });
+
+  // Sortare
+  top5.sort((a,b)=>{
+    let va, vb;
+    if(sortTop5.col==='nume'){va=(a.pac?.nume||'').toLowerCase();vb=(b.pac?.nume||'').toLowerCase();}
+    else if(sortTop5.col==='cnp'){va=a.cnp;vb=b.cnp;}
+    else if(sortTop5.col==='aparat'){va=a.decizii.map(d=>d.cod_aparat).join();vb=b.decizii.map(d=>d.cod_aparat).join();}
+    else if(sortTop5.col==='alerta'){va=a.lastAlert?.data_alerta||'';vb=b.lastAlert?.data_alerta||'';}
+    else{va=a.maxDep;vb=b.maxDep;} // default: zile
+    if(typeof va==='number') return (va-vb)*sortTop5.dir;
+    return va<vb?-sortTop5.dir:va>vb?sortTop5.dir:0;
+  });
+  top5 = top5.slice(0,10); // aratam top 10
+
+  const tb = document.getElementById('tTop5');
+  if(!tb) return;
+
+  // Header sortabil
+  const thead = tb.closest('table').querySelector('thead');
+  if(thead) thead.innerHTML=`<tr>
+    <th>#</th>
+    <th style="cursor:pointer" onclick="sortTop5Col('nume')">Pacient${sortTop5Icon('nume')}</th>
+    <th style="cursor:pointer" onclick="sortTop5Col('cnp')">CNP${sortTop5Icon('cnp')}</th>
+    <th style="cursor:pointer" onclick="sortTop5Col('aparat')">Aparat${sortTop5Icon('aparat')}</th>
+    <th style="cursor:pointer" onclick="sortTop5Col('zile')">Zile depasire${sortTop5Icon('zile')}</th>
+    <th style="cursor:pointer" onclick="sortTop5Col('alerta')">Ultima alerta${sortTop5Icon('alerta')}</th>
+  </tr>`;
+
+  if(!top5.length){tb.innerHTML='<tr><td colspan="6"><div class="empty">Nicio depasire activa</div></td></tr>';return;}
+  tb.innerHTML = top5.map((r,i)=>`<tr style="cursor:pointer" onclick="goToFisa('${r.cnp}')">
+    <td><span style="font-weight:600;color:var(--t3)">${i+1}</span></td>
+    <td><div class="pn">${r.pac?r.pac.nume||r.cnp:r.cnp}</div></td>
+    <td><span class="pcnp">${r.cnp}</span></td>
+    <td>${r.decizii.map(d=>d.cod_aparat||'-').join(', ')}</td>
+    <td><span class="badge br">${r.maxDep} zile</span></td>
+    <td><span style="font-size:12px;color:var(--t3)">${r.lastAlert?r.lastAlert.data_alerta:'-'}</span></td>
+  </tr>`).join('');
+}
+
+function openDashList(tip){
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+  const in30 = new Date(today); in30.setDate(in30.getDate()+30);
+  const in10 = new Date(today); in10.setDate(in10.getDate()+10);
+
+  let titlu='', rows=[], cols='';
+  const btnNotif = document.getElementById('btnDashNotifMasa');
+  btnNotif.style.display='none';
+
+  if(tip==='active'){
+    titlu='Decizii active';
+    const data = Object.values(DECIZII).filter(d=>d.status==='activa'&&new Date(d.data_expirare)>=today).sort((a,b)=>a.data_expirare.localeCompare(b.data_expirare));
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Nr. decizie</th><th>Expira</th><th>Zile ramase</th></tr>';
+    rows=data.map(d=>{const p=PACIENTI[d.cnp_pacient];const diff=Math.round((new Date(d.data_expirare)-today)/86400000);return `<tr onclick="goToFisa('${d.cnp_pacient}')" style="cursor:pointer"><td><div class="pn">${p?p.nume:d.cnp_pacient}</div></td><td><span class="pcnp">${d.cnp_pacient}</span></td><td>${d.cod_aparat||'-'}</td><td style="font-family:'DM Mono',monospace;font-size:12px">${d.nr_decizie||'-'}</td><td>${fd2(d.data_expirare)}</td><td><span class="badge bg">${diff} zile</span></td></tr>`;});
+  } else if(tip==='exp30'){
+    titlu='Expira in 30 zile';btnNotif.style.display='';
+    const data=Object.values(DECIZII).filter(d=>d.status==='activa'&&new Date(d.data_expirare)>=today&&new Date(d.data_expirare)<=in30).sort((a,b)=>a.data_expirare.localeCompare(b.data_expirare));
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Expira</th><th>Zile ramase</th><th></th></tr>';
+    rows=data.map(d=>{const p=PACIENTI[d.cnp_pacient];const diff=Math.round((new Date(d.data_expirare)-today)/86400000);return `<tr><td onclick="goToFisa('${d.cnp_pacient}')" style="cursor:pointer"><div class="pn">${p?p.nume:d.cnp_pacient}</div></td><td><span class="pcnp">${d.cnp_pacient}</span></td><td>${d.cod_aparat||'-'}</td><td>${fd2(d.data_expirare)}</td><td><span class="badge ba">${diff} zile</span></td><td><button class="btn btnsm" onclick="openNotifPacient('${d.cnp_pacient}')">Notifica</button></td></tr>`;});
+  } else if(tip==='exp10'){
+    titlu='Expira urgent — 10 zile';btnNotif.style.display='';
+    const data=Object.values(DECIZII).filter(d=>d.status==='activa'&&new Date(d.data_expirare)>=today&&new Date(d.data_expirare)<=in10).sort((a,b)=>a.data_expirare.localeCompare(b.data_expirare));
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Expira</th><th>Zile ramase</th><th></th></tr>';
+    rows=data.map(d=>{const p=PACIENTI[d.cnp_pacient];const diff=Math.round((new Date(d.data_expirare)-today)/86400000);return `<tr><td onclick="goToFisa('${d.cnp_pacient}')" style="cursor:pointer"><div class="pn">${p?p.nume:d.cnp_pacient}</div></td><td><span class="pcnp">${d.cnp_pacient}</span></td><td>${d.cod_aparat||'-'}</td><td>${fd2(d.data_expirare)}</td><td><span class="badge bo">${diff} zile</span></td><td><button class="btn btnsm btnr" onclick="openNotifPacient('${d.cnp_pacient}')">Notifica urgent</button></td></tr>`;});
+  } else if(tip==='dep'){
+    titlu='Decizii depasite';btnNotif.style.display='';
+    const cnpSet=[...new Set(Object.values(ALERTE).filter(a=>a.status==='activa'&&(a.tip==='depasire-10'||a.tip==='depasire-recurenta')).map(a=>a.cnp_pacient))];
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Aparat</th><th>Expirare</th><th>Zile dep.</th><th>Tip alerta</th><th></th></tr>';
+    rows=cnpSet.flatMap(cnp=>{
+      return Object.values(DECIZII).filter(d=>d.cnp_pacient===cnp&&d.status==='activa').map(d=>{
+        const p=PACIENTI[cnp];const diff=Math.round((today-new Date(d.data_expirare))/86400000);
+        const al=Object.values(ALERTE).filter(a=>a.id_decizie===d.id&&a.status==='activa').sort((a,b)=>b.data_alerta.localeCompare(a.data_alerta))[0];
+        return `<tr><td onclick="goToFisa('${cnp}')" style="cursor:pointer"><div class="pn">${p?p.nume:cnp}</div></td><td><span class="pcnp">${cnp}</span></td><td>${d.cod_aparat||'-'}</td><td>${fd2(d.data_expirare)}</td><td><span class="badge br">${diff} zile</span></td><td>${al?tipAlertaBadge(al.tip):'-'}</td><td><button class="btn btnsm" onclick="openNotifPacient('${cnp}')">Notifica</button></td></tr>`;
+      });
+    });
+  } else if(tip==='necomp'){
+    titlu='Pacienti necompliant';
+    const data=Object.values(PACIENTI).filter(p=>p.status==='necompliant');
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Judet</th><th>Data urmarire</th><th>Telefon</th></tr>';
+    rows=data.map(p=>`<tr onclick="goToFisa('${p.cnp}')" style="cursor:pointer"><td><div class="pn">${p.nume||p.cnp}</div></td><td><span class="pcnp">${p.cnp}</span></td><td>${p.judet||'-'}</td><td>${p.data_urmarire||'-'}</td><td>${p.telefon||'-'}</td></tr>`);
+  } else if(tip==='urm'){
+    titlu='Urmarire complianta scadenta azi';
+    const data=REMINDERE.filter(r=>r.tip==='complianta'&&r.status==='pending'&&r.data<=todayStr);
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Data urmarire</th><th>Agent</th><th>Actiuni</th></tr>';
+    rows=data.map(r=>{const p=PACIENTI[r.cnp_pacient];return `<tr><td onclick="goToFisa('${r.cnp_pacient}')" style="cursor:pointer"><div class="pn">${p?p.nume:r.cnp_pacient}</div></td><td><span class="pcnp">${r.cnp_pacient}</span></td><td>${r.data||'-'}</td><td>${r.agent||'-'}</td><td><button class="btn btnsm btnt" onclick="openActiuneComplianta('${r.cnp_pacient}','${r.id||''}')">Verifica complianta</button></td></tr>`;});
+  } else if(tip==='rez'){
+    titlu='Contracte reziliate';
+    const data=Object.values(PACIENTI).filter(p=>p.status==='reziliat');
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Judet</th><th>Motiv reziliere</th></tr>';
+    rows=data.map(p=>`<tr onclick="goToFisa('${p.cnp}')" style="cursor:pointer"><td><div class="pn">${p.nume||p.cnp}</div></td><td><span class="pcnp">${p.cnp}</span></td><td>${p.judet||'-'}</td><td>${p.motiv_reziliere||'-'}</td></tr>`);
+  } else if(tip==='priv'){
+    titlu='Plata privata';
+    const data=Object.values(PACIENTI).filter(p=>p.status==='privat');
+    cols='<tr><th>Pacient</th><th>CNP</th><th>Judet</th><th>Telefon</th></tr>';
+    rows=data.map(p=>`<tr onclick="goToFisa('${p.cnp}')" style="cursor:pointer"><td><div class="pn">${p.nume||p.cnp}</div></td><td><span class="pcnp">${p.cnp}</span></td><td>${p.judet||'-'}</td><td>${p.telefon||'-'}</td></tr>`);
+  }
+
+  document.getElementById('dashListTitlu').textContent=titlu+' ('+rows.length+')';
+  document.getElementById('dashListHead').innerHTML=cols;
+  document.getElementById('dashListBody').innerHTML=rows.length?rows.join(''):'<tr><td colspan="10"><div class="empty">Nicio inregistrare</div></td></tr>';
+  document.getElementById('modalDashList').classList.add('open');
+}
+
+// ════════════════════════════════════════════════
+// FISA PACIENT
+// ════════════════════════════════════════════════
+function renderPL(){
+  const q = (document.getElementById('plSearch')||{value:''}).value.toLowerCase();
+  const all = Object.values(PACIENTI).sort((a,b)=>(a.nume||'').localeCompare(b.nume||''));
+  const filt = q ? all.filter(p=>(p.nume||'').toLowerCase().includes(q)||(p.cnp||'').includes(q)) : all;
+  const el = document.getElementById('pacientList');
+  document.getElementById('plCount').textContent = filt.length+' / '+all.length+' pacienti';
+  if(!filt.length){el.innerHTML='<div class="empty" style="padding:20px">Niciun pacient gasit</div>';return;}
+  el.innerHTML = filt.map(p=>{
+    const status = p.status||'activ';
+    const decActActive = Object.values(DECIZII).filter(d=>d.cnp_pacient===p.cnp&&d.status==='activa');
+    const alerteAct = Object.values(ALERTE).filter(a=>a.cnp_pacient===p.cnp&&a.status==='activa').length;
+    return `<div class="plitem${selCnp===p.cnp?' active':''}" onclick="selPacient('${p.cnp}')">
+      <div class="plname" title="${p.nume||p.cnp}">${p.nume||p.cnp}</div>
+      <div class="plmeta">
+        <span>${statusDot(status)}${status}</span>
+        <span>&middot;</span>
+        <span>${decActActive.length} decizii</span>
+        ${alerteAct?`<span class="badge br" style="font-size:10px;padding:1px 5px">${alerteAct}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterPL(q){renderPL();}
+
+function selPacient(cnp){
+  selCnp = cnp;
+  renderPL();
+  renderFisa(cnp);
+}
+
+function goToFisa(cnp){
+  closeModal('modalDashList');
+  showPage('jurnal', document.getElementById('nav-jurnal'));
+  setTimeout(function(){selPacient(cnp);},80);
+}
+
+function renderFisa(cnp){
+  const pac = PACIENTI[cnp];
+  if(!pac){document.getElementById('jmain').innerHTML='<div class="empty"><div class="etl">Pacient negasit</div></div>';return;}
+
+  const deciziiActive = Object.values(DECIZII).filter(d=>d.cnp_pacient===cnp&&d.status==='activa');
+  const deciziiArhivate = Object.values(DECIZII).filter(d=>d.cnp_pacient===cnp&&d.status==='arhivata').sort((a,b)=>b.data_expirare.localeCompare(a.data_expirare));
+  const alertePac = Object.values(ALERTE).filter(a=>a.cnp_pacient===cnp&&a.status==='activa');
+  const jurnalPac = (JURNAL[cnp]||[]).sort((a,b)=>b.data.localeCompare(a.data));
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const statusColor = {activ:'var(--green)',reziliat:'var(--t3)',privat:'var(--blue)',necompliant:'var(--red)'}[pac.status||'activ']||'var(--t3)';
+
+  let html = `
+  <div class="pch">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:18px;font-weight:600;margin-bottom:4px">${pac.nume||cnp}</div>
+        <div style="display:flex;gap:16px;font-size:12px;color:var(--t3);flex-wrap:wrap">
+          <span>CNP: <strong style="font-family:'DM Mono',monospace;color:var(--text)">${cnp}</strong></span>
+          ${pac.judet?`<span>Judet: ${pac.judet}</span>`:''}
+          ${pac.telefon?`<span>Tel: <a href="tel:${pac.telefon}" style="color:var(--teal)">${pac.telefon}</a></span>`:''}
+          ${pac.email?`<span>Email: <a href="mailto:${pac.email}" style="color:var(--teal)">${pac.email}</a></span>`:''}
+          ${pac.nr_contract?`<span>Contract: ${pac.nr_contract}</span>`:''}
+          ${pac.rata_lunara?`<span>Rata: <strong>${fv(pac.rata_lunara)} LEI/luna</strong></span>`:''}
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+        <span class="badge" style="background:${statusColor}20;color:${statusColor};font-size:12px;padding:4px 10px">${pac.status||'activ'}</span>
+        <button class="btn btnsm btnt" onclick="openNotifPacient('${cnp}')">📧 Notificare</button>
+        <button class="btn btnsm" onclick="openActiune('${cnp}','necompliant')">Necompliant</button>
+        <button class="btn btnsm" onclick="openActiune('${cnp}','privat')">Privat</button>
+        <button class="btn btnsm" style="color:var(--red);border-color:var(--red)" onclick="openActiune('${cnp}','reziliat')">Reziliaza</button>
+      </div>
+    </div>
+    ${alertePac.length?`<div style="margin-top:12px;padding:10px 14px;background:var(--rbg);border-radius:var(--rs);font-size:12px;color:var(--red)"><strong>${alertePac.length} alerte active</strong>: ${alertePac.map(a=>tipAlertaBadge(a.tip)).join(' ')}</div>`:''}
+  </div>
+
+  <!-- DECIZII ACTIVE -->
+  <div class="card">
+    <div class="ch"><div><div class="ct">Decizii active (${deciziiActive.length})</div><div class="cs">aparate in decontare activa</div></div></div>
+    ${deciziiActive.length?`<div class="tw"><table>
+      <thead><tr><th>Cod aparat</th><th>Nr. decizie</th><th>Casa asig.</th><th>Data emitere</th><th>Data expirare</th><th>Luni val.</th><th>Tarif lunar</th><th>Zile</th></tr></thead>
+      <tbody>${deciziiActive.map(d=>{
+        const exp=new Date(d.data_expirare);exp.setHours(0,0,0,0);
+        const diff=Math.round((exp-today)/86400000);
+        const zileCls=diff<0?'br':diff<=10?'bo':diff<=30?'ba':'bg';
+        const zileText=diff<0?`-${Math.abs(diff)} dep.`:`${diff} ram.`;
+        return `<tr><td><strong>${d.cod_aparat||'-'}</strong></td><td style="font-family:'DM Mono',monospace;font-size:12px">${d.nr_decizie||'-'}</td><td>${d.casa_asigurari||'-'}</td><td>${fd2(d.data_emitere)}</td><td>${fd2(d.data_expirare)}</td><td>${d.luni_valabilitate||'-'}</td><td>${fv(d.tarif_lunar)} LEI</td><td><span class="badge ${zileCls}">${zileText}</span></td></tr>`;
+      }).join('')}</tbody>
+    </table></div>`:`<div class="empty" style="padding:20px">Nicio decizie activa</div>`}
+  </div>
+
+  <!-- DECIZII ARHIVATE -->
+  ${deciziiArhivate.length?`<div class="card">
+    <div class="ch" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'" style="cursor:pointer">
+      <div><div class="ct">Istoric decizii arhivate (${deciziiArhivate.length})</div></div>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;color:var(--t3)"><polyline points="6 9 12 15 18 9"/></svg>
+    </div>
+    <div style="display:none"><div class="tw"><table>
+      <thead><tr><th>Cod aparat</th><th>Nr. decizie</th><th>Data emitere</th><th>Data expirare</th><th>Tarif lunar</th></tr></thead>
+      <tbody>${deciziiArhivate.map(d=>`<tr style="opacity:.7"><td>${d.cod_aparat||'-'}</td><td style="font-family:'DM Mono',monospace;font-size:12px">${d.nr_decizie||'-'}</td><td>${fd2(d.data_emitere)}</td><td>${fd2(d.data_expirare)}</td><td>${fv(d.tarif_lunar)} LEI</td></tr>`).join('')}</tbody>
+    </table></div></div>
+  </div>`:''}
+
+  <!-- JURNAL -->
+  <div class="card">
+    <div class="ch">
+      <div><div class="ct">Jurnal interactiuni (${jurnalPac.length})</div></div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <select class="fi" style="padding:5px 8px;font-size:12px" onchange="renderFisa('${cnp}')" id="filtJurnal_${cnp}">
+          <option value="">Toate</option><option value="apel">Apel</option><option value="email">Email</option><option value="whatsapp">WhatsApp</option><option value="intalnire">Intalnire</option><option value="promisiune">Promisiune</option><option value="necompliant">Necompliant</option><option value="nota">Nota</option>
+        </select>
+      </div>
+    </div>
+    <div style="padding:16px 18px">
+      <!-- Adauga interactiune -->
+      <div style="margin-bottom:18px;padding:14px;background:var(--bg);border-radius:var(--rs)">
+        <div style="font-size:12px;font-weight:500;color:var(--t2);margin-bottom:8px">Adauga interactiune</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+          ${['apel','email','whatsapp','intalnire','promisiune','necompliant','nota'].map(t=>`<button class="itype-btn${selTip===t?' active':''}" id="itype_${cnp}_${t}" onclick="setItype('${cnp}','${t}')">${icoTip(t)} ${t}</button>`).join('')}
+        </div>
+        <textarea id="itextarea_${cnp}" class="form-inp" placeholder="Descriere interactiune..." style="height:70px;margin-bottom:8px"></textarea>
+        <div id="iextras_${cnp}" style="display:none">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+            <div><div class="form-lbl">Data urmarire</div><input type="date" class="form-inp" id="iurm_${cnp}"></div>
+            <div><div class="form-lbl">Observatie suplimentara</div><input type="text" class="form-inp" id="iobs_${cnp}" placeholder="Optional"></div>
+          </div>
+        </div>
+        <button class="btn btnt btnsm" onclick="addJurnal('${cnp}')">Adauga nota</button>
+      </div>
+      <!-- Timeline -->
+      <div id="timeline_${cnp}">
+        ${renderTimeline(cnp)}
+      </div>
+    </div>
+  </div>`;
+
+  document.getElementById('jmain').innerHTML = html;
+  // Set default tip
+  if(!selTip) selTip = 'apel';
+  const defBtn = document.getElementById(`itype_${cnp}_${selTip}`);
+  if(defBtn) defBtn.classList.add('active');
+}
+
+let selTip = 'apel';
+function setItype(cnp, tip){
+  selTip = tip;
+  ['apel','email','whatsapp','intalnire','promisiune','necompliant','nota'].forEach(t=>{
+    const b=document.getElementById(`itype_${cnp}_${t}`);
+    if(b) b.classList.toggle('active',t===tip);
+  });
+  const ex = document.getElementById(`iextras_${cnp}`);
+  if(ex) ex.style.display = (tip==='necompliant'||tip==='promisiune') ? 'block' : 'none';
+}
+
+function renderTimeline(cnp){
+  const filtEl = document.getElementById(`filtJurnal_${cnp}`);
+  const filt = filtEl ? filtEl.value : '';
+  let note = (JURNAL[cnp]||[]).sort((a,b)=>b.data.localeCompare(a.data));
+  if(filt) note = note.filter(n=>n.tip===filt);
+  if(!note.length) return '<div style="text-align:center;padding:20px;color:var(--t3)">Nicio interactiune inregistrata</div>';
+  return note.map(n=>`<div class="timeline-item">
+    <div class="tl-icon" style="background:${bgTip(n.tip)};color:${colTip(n.tip)}">${icoTip(n.tip)}</div>
+    <div class="tl-body">
+      <div class="tl-header">
+        <span class="tl-type" style="color:${colTip(n.tip)}">${n.tip||'nota'}</span>
+        <span class="tl-date">${fdt(n.data)}</span>
+        ${n.agent?`<span class="tl-agent">&middot; ${n.agent}</span>`:''}
+      </div>
+      <div class="tl-text">${n.text||''}</div>
+      ${n.data_urmarire?`<div style="font-size:11px;color:var(--purple);margin-top:4px">&#128197; Urmarire: ${n.data_urmarire}</div>`:''}
+    </div>
+  </div>`).join('');
+}
+
+function addJurnal(cnp){
+  const ta = document.getElementById(`itextarea_${cnp}`);
+  if(!ta||!ta.value.trim()){toast('Completeaza descrierea interactiunii','error');return;}
+  const urm = (document.getElementById(`iurm_${cnp}`)||{}).value||'';
+  const obs = (document.getElementById(`iobs_${cnp}`)||{}).value||'';
+  const nota = {
+    id: uid(),
+    tip: selTip,
+    text: ta.value.trim() + (obs?' — '+obs:''),
+    data: new Date().toISOString(),
+    agent: currentUser ? (currentUser.displayName||currentUser.email) : 'Agent',
+    data_urmarire: urm
+  };
+  if(!JURNAL[cnp]) JURNAL[cnp]=[];
+  JURNAL[cnp].unshift(nota);
+  saveJurnal(cnp);
+  ta.value='';
+
+  // Daca tip necompliant -> seteaza status si creeaza reminder
+  if(selTip==='necompliant'){
+    const pac = PACIENTI[cnp]||{};
+    pac.status='necompliant';
+    pac.data_urmarire=urm;
+    PACIENTI[cnp]=pac;
+    savePacient(cnp,pac);
+    if(urm){
+      const rem={id:uid(),cnp_pacient:cnp,tip:'complianta',data:urm,text:'Verificare complianta: '+ta.value.trim(),status:'pending',agent:nota.agent,creat:new Date().toISOString()};
+      REMINDERE.push(rem);saveReminder(rem);
+    }
+    toast('Pacient marcat necompliant','success');
+  }
+
+  // Re-render timeline
+  const tl = document.getElementById(`timeline_${cnp}`);
+  if(tl) tl.innerHTML = renderTimeline(cnp);
+  renderPL();renderDB();updateBadges();
+  toast('Interactiune adaugata','success');
+}
+
+// ════════════════════════════════════════════════
+// ALERTE PAGE
+// ════════════════════════════════════════════════
+function sortTh(col, tbl){
+  if(tbl==='alerte'){
+    if(sortAlerte.col===col) sortAlerte.dir*=-1; else {sortAlerte.col=col;sortAlerte.dir=1;}
+    renderAlerte();
+  } else {
+    if(sortRemindere.col===col) sortRemindere.dir*=-1; else {sortRemindere.col=col;sortRemindere.dir=1;}
+    renderRemindere();
+  }
+}
+function sortIcon(col, tbl){
+  const s = tbl==='alerte'?sortAlerte:sortRemindere;
+  if(s.col!==col) return '<span style="color:var(--t3);font-size:10px"> ⇅</span>';
+  return s.dir===1?'<span style="color:var(--teal);font-size:10px"> ↑</span>':'<span style="color:var(--teal);font-size:10px"> ↓</span>';
+}
+
+function renderAlerte(){
+  const tipF = document.getElementById('filtTipAlerta').value;
+  const stF = document.getElementById('filtStatusAlerta').value;
+  const q = (document.getElementById('searchAlerte')?.value||'').toLowerCase().trim();
+  let data = Object.values(ALERTE);
+  if(tipF) data=data.filter(a=>a.tip===tipF);
+  if(stF) data=data.filter(a=>a.status===stF);
+  if(q) data=data.filter(a=>{
+    const pac=PACIENTI[a.cnp_pacient];
+    const dec=DECIZII[a.id_decizie];
+    return (pac?.nume||'').toLowerCase().includes(q)
+      || (a.cnp_pacient||'').includes(q)
+      || (dec?.cod_aparat||'').toLowerCase().includes(q)
+      || (dec?.nr_decizie||'').toLowerCase().includes(q)
+      || (a.tip||'').toLowerCase().includes(q);
+  });
+
+  // Sortare
+  data.sort((a,b)=>{
+    let va='', vb='';
+    if(sortAlerte.col==='nume'){va=(PACIENTI[a.cnp_pacient]?.nume||'').toLowerCase();vb=(PACIENTI[b.cnp_pacient]?.nume||'').toLowerCase();}
+    else if(sortAlerte.col==='cnp'){va=a.cnp_pacient||'';vb=b.cnp_pacient||'';}
+    else if(sortAlerte.col==='aparat'){va=(DECIZII[a.id_decizie]?.cod_aparat||'').toLowerCase();vb=(DECIZII[b.id_decizie]?.cod_aparat||'').toLowerCase();}
+    else if(sortAlerte.col==='tip'){va=a.tip||'';vb=b.tip||'';}
+    else if(sortAlerte.col==='data_expirare'){va=DECIZII[a.id_decizie]?.data_expirare||'';vb=DECIZII[b.id_decizie]?.data_expirare||'';}
+    else if(sortAlerte.col==='status'){va=a.status||'';vb=b.status||'';}
+    else{va=a.data_alerta||'';vb=b.data_alerta||'';}
+    return va<vb?-sortAlerte.dir:va>vb?sortAlerte.dir:0;
+  });
+
+  document.getElementById('alerteTitlu').textContent='Alerte ('+data.length+')';
+  const today = new Date(); today.setHours(0,0,0,0);
+  const tb = document.getElementById('tAlerte');
+
+  // Header cu sortare
+  const thead = tb.closest('table').querySelector('thead');
+  if(thead) thead.innerHTML=`<tr>
+    <th><input type="checkbox" id="chkAll" onchange="toggleAllAlerte(this.checked)"></th>
+    <th style="cursor:pointer" onclick="sortTh('nume','alerte')">Pacient${sortIcon('nume','alerte')}</th>
+    <th style="cursor:pointer" onclick="sortTh('cnp','alerte')">CNP${sortIcon('cnp','alerte')}</th>
+    <th style="cursor:pointer" onclick="sortTh('aparat','alerte')">Aparat${sortIcon('aparat','alerte')}</th>
+    <th style="cursor:pointer" onclick="sortTh('tip','alerte')">Tip alerta${sortIcon('tip','alerte')}</th>
+    <th style="cursor:pointer" onclick="sortTh('data_expirare','alerte')">Data expirare${sortIcon('data_expirare','alerte')}</th>
+    <th>Zile</th>
+    <th style="cursor:pointer" onclick="sortTh('status','alerte')">Status${sortIcon('status','alerte')}</th>
+    <th>Actiuni</th>
+  </tr>`;
+
+  if(!data.length){tb.innerHTML='<tr><td colspan="9"><div class="empty">Nicio alerta</div></td></tr>';return;}
+  tb.innerHTML = data.map(a=>{
+    const pac=PACIENTI[a.cnp_pacient];
+    const dec=DECIZII[a.id_decizie];
+    const diff=dec?Math.round((today-new Date(dec.data_expirare))/86400000):0;
+    return `<tr>
+      <td><input type="checkbox" class="alert-chk" value="${a.id}"></td>
+      <td><span class="pn" style="cursor:pointer" onclick="goToFisa('${a.cnp_pacient}')">${pac?pac.nume:a.cnp_pacient}</span></td>
+      <td><span class="pcnp">${a.cnp_pacient}</span></td>
+      <td>${dec?dec.cod_aparat||'-':'-'}</td>
+      <td>${tipAlertaBadge(a.tip)}</td>
+      <td>${dec?fd2(dec.data_expirare):'-'}</td>
+      <td><span class="badge ${diff>0?'br':'bg'}">${diff>0?'+'+diff+' dep':Math.abs(diff)+' ram'}</span></td>
+      <td>${statusBadge(a.status)}</td>
+      <td style="white-space:nowrap">
+        ${a.status==='activa'?`<button class="btn btnsm btnt" onclick="openNotifPacient('${a.cnp_pacient}')">Notifica</button> <button class="btn btnsm" onclick="inchideAlerta('${a.id}','manual')">Inchide</button>`:''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function toggleAllAlerte(v){document.querySelectorAll('.alert-chk').forEach(c=>c.checked=v);}
+
+function inchideAlerta(id, motiv){
+  if(!ALERTE[id])return;
+  ALERTE[id].status='inchisa';ALERTE[id].motiv_inchidere=motiv;
+  saveAlerta(id,ALERTE[id]);
+  renderAlerte();updateBadges();renderDB();
+  toast('Alerta inchisa');
+}
+
+// ════════════════════════════════════════════════
+// REMINDERE
+// ════════════════════════════════════════════════
+function renderRemindere(){
+  const filt = document.getElementById('filtRem').value;
+  const fdata = document.getElementById('filtRemData').value;
+  const q = (document.getElementById('searchRemindere')?.value||'').toLowerCase().trim();
+  const today = new Date().toISOString().slice(0,10);
+  let data = [...REMINDERE];
+  data.forEach(r=>{if(r.status==='pending'&&r.data<today)r.status='overdue';});
+  if(filt) data=data.filter(r=>r.status===filt);
+  if(fdata) data=data.filter(r=>r.data===fdata);
+  if(q) data=data.filter(r=>{
+    const p=PACIENTI[r.cnp_pacient];
+    return (p?.nume||'').toLowerCase().includes(q)
+      || (r.cnp_pacient||'').includes(q)
+      || (r.agent||'').toLowerCase().includes(q)
+      || (r.text||'').toLowerCase().includes(q)
+      || (DECIZII[r.id_decizie]?.cod_aparat||'').toLowerCase().includes(q);
+  });
+
+  // Sortare
+  data.sort((a,b)=>{
+    let va='', vb='';
+    if(sortRemindere.col==='nume'){va=(PACIENTI[a.cnp_pacient]?.nume||'').toLowerCase();vb=(PACIENTI[b.cnp_pacient]?.nume||'').toLowerCase();}
+    else if(sortRemindere.col==='cnp'){va=a.cnp_pacient||'';vb=b.cnp_pacient||'';}
+    else if(sortRemindere.col==='agent'){va=a.agent||'';vb=b.agent||'';}
+    else if(sortRemindere.col==='status'){va=a.status||'';vb=b.status||'';}
+    else if(sortRemindere.col==='aparat'){va=(DECIZII[a.id_decizie]?.cod_aparat||'').toLowerCase();vb=(DECIZII[b.id_decizie]?.cod_aparat||'').toLowerCase();}
+    else{va=a.data||'';vb=b.data||'';}
+    return va<vb?-sortRemindere.dir:va>vb?sortRemindere.dir:0;
+  });
+
+  const tb=document.getElementById('tRemindere');
+
+  // Header cu sortare
+  const thead = tb.closest('table').querySelector('thead');
+  if(thead) thead.innerHTML=`<tr>
+    <th style="cursor:pointer" onclick="sortTh('data','remindere')">Data urmarire${sortIcon('data','remindere')}</th>
+    <th style="cursor:pointer" onclick="sortTh('nume','remindere')">Pacient${sortIcon('nume','remindere')}</th>
+    <th style="cursor:pointer" onclick="sortTh('cnp','remindere')">CNP${sortIcon('cnp','remindere')}</th>
+    <th style="cursor:pointer" onclick="sortTh('aparat','remindere')">Aparat${sortIcon('aparat','remindere')}</th>
+    <th style="cursor:pointer" onclick="sortTh('agent','remindere')">Agent${sortIcon('agent','remindere')}</th>
+    <th style="cursor:pointer" onclick="sortTh('status','remindere')">Status${sortIcon('status','remindere')}</th>
+    <th>Actiuni</th>
+  </tr>`;
+
+  if(!data.length){tb.innerHTML='<tr><td colspan="7"><div class="empty">Niciun reminder</div></td></tr>';return;}
+  tb.innerHTML=data.map(r=>{
+    const p=PACIENTI[r.cnp_pacient];
+    const dec=r.id_decizie?DECIZII[r.id_decizie]:null;
+    const stCls=r.status==='done'?'bg':r.status==='overdue'?'br':'ba';
+    const stLbl=r.status==='done'?'Rezolvat':r.status==='overdue'?'Depasit':'In asteptare';
+    return `<tr>
+      <td>
+        <input type="date" value="${r.data||''}" style="font-family:inherit;font-size:12px;border:1px solid var(--bmed);border-radius:var(--rs);padding:3px 6px;background:var(--surface)"
+          onchange="editReminderData('${r.id}',this.value)">
+      </td>
+      <td><span class="pn" style="cursor:pointer" onclick="goToFisa('${r.cnp_pacient}')">${p?p.nume:r.cnp_pacient}</span>
+        <div style="font-size:11px;color:var(--t3);margin-top:2px">${r.text||''}</div>
+      </td>
+      <td><span class="pcnp">${r.cnp_pacient}</span></td>
+      <td>${dec?dec.cod_aparat||'-':'-'}</td>
+      <td>${r.agent||'-'}</td>
+      <td><span class="badge ${stCls}">${stLbl}</span></td>
+      <td style="white-space:nowrap;display:flex;gap:4px">
+        ${r.status!=='done'?`<button class="btn btnsm btnt" onclick="openActiuneComplianta('${r.cnp_pacient}','${r.id||''}')">Verifica</button>`:''}
+        ${r.status!=='done'?`<button class="btn btnsm" onclick="inchideReminder('${r.id}')">Inchide</button>`:''}
+        <button class="btn btnsm" style="color:var(--red);border-color:rgba(163,45,45,.3)" onclick="stergeReminder('${r.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+  updateBadges();
+}
+
+function editReminderData(id, newData){
+  const r=REMINDERE.find(x=>x.id===id);
+  if(!r)return;
+  r.data=newData;
+  r.status='pending'; // reactivam daca era overdue
+  saveReminder(r);
+  renderRemindere();
+  toast('Data urmarire actualizata','success');
+}
+
+function inchideReminder(id){
+  const r=REMINDERE.find(x=>x.id===id);
+  if(!r)return;
+  r.status='done';
+  saveReminder(r);
+  renderRemindere();updateBadges();
+  toast('Reminder inchis');
+}
+
+function stergeReminder(id){
+  if(!confirm('Stergi acest reminder?'))return;
+  REMINDERE=REMINDERE.filter(x=>x.id!==id);
+  if(window.db) window.db.collection('remindere').doc(id).delete().catch(e=>console.warn(e));
+  renderRemindere();updateBadges();
+  toast('Reminder sters');
+}
+
+// ════════════════════════════════════════════════
+// NOTIFICARI
+// ════════════════════════════════════════════════
+function openNotifPacient(cnp){
+  const pac = PACIENTI[cnp];
+  if(!pac){toast('Pacient negasit','error');return;}
+  notifTarget = {cnp, pac};
+  document.getElementById('notifTitlu').textContent = 'Notificare: '+pac.nume;
+  document.getElementById('notifEmail').value = pac.email||'';
+  document.getElementById('notifTel').value = pac.telefon||'';
+  setCanal('email');
+
+  const decizii = Object.values(DECIZII).filter(d=>d.cnp_pacient===cnp&&d.status==='activa');
+  const today = new Date(); today.setHours(0,0,0,0);
+  const listaDec = decizii.map(d=>{
+    const diff=Math.round((new Date(d.data_expirare)-today)/86400000);
+    return `- Aparat ${d.cod_aparat||'-'}: decizie ${d.nr_decizie||'-'}, expira ${fd2(d.data_expirare)} (${diff<0?Math.abs(diff)+' zile depasire':diff+' zile ramase'})`;
+  }).join('\n');
+
+  const tpl = CFG.template_email || document.getElementById('sTplEmail').value;
+  const mesaj = tpl
+    .replace(/{NUME}/g, pac.nume||cnp)
+    .replace(/{NR_DECIZIE}/g, decizii.map(d=>d.nr_decizie||'-').join(', '))
+    .replace(/{COD_APARAT}/g, decizii.map(d=>d.cod_aparat||'-').join(', '))
+    .replace(/{DATA_EXPIRARE}/g, decizii.map(d=>fd2(d.data_expirare)).join(', '))
+    .replace(/{ZILE_RAMASE}/g, decizii.map(d=>{const diff=Math.round((new Date(d.data_expirare)-today)/86400000);return diff<0?Math.abs(diff)+' dep':diff+' ram';}).join(', '))
+    .replace(/{AGENT}/g, currentUser?(currentUser.displayName||currentUser.email):'Agent 1stMedica');
+
+  document.getElementById('notifSubiect').value = 'Decizie decontare — '+pac.nume;
+  document.getElementById('notifMesaj').value = mesaj;
+
+  const tplSms = CFG.template_sms || document.getElementById('sTplSms').value;
+  document.getElementById('notifMesajSms').value = tplSms.replace(/{NUME}/g,pac.nume||cnp).replace(/{COD_APARAT}/g,decizii.map(d=>d.cod_aparat).join('+')).replace(/{DATA_EXPIRARE}/g,decizii.map(d=>fd2(d.data_expirare)).join(','));
+
+  document.getElementById('modalNotif').classList.add('open');
+}
+
+function setCanal(c){
+  notifCanal=c;
+  ['email','sms','whatsapp'].forEach(x=>{
+    document.getElementById('canal'+cap(x)).classList.toggle('active',x===c);
+  });
+  document.getElementById('notifEmailSec').style.display=c==='email'?'block':'none';
+  document.getElementById('notifSmsSec').style.display=c!=='email'?'block':'none';
+  document.getElementById('btnSendNotif').textContent=c==='email'?'Trimite Email':c==='sms'?'Deschide SMS':'Deschide WhatsApp';
+}
+
+function sendNotif(){
+  if(!notifTarget)return;
+  const cnp=notifTarget.cnp;const pac=notifTarget.pac;
+  const agent=currentUser?(currentUser.displayName||currentUser.email):'Agent';
+
+  if(notifCanal==='email'){
+    const svcId=CFG.emailjs_service_id||'service_mtgppoa';
+    const tplId=CFG.emailjs_template_id;
+    const pubKey=CFG.emailjs_public_key||'AeZwH6rd5SleiqMQc';
+    if(!tplId){toast('Configureaza Template ID EmailJS in Setari','error');return;}
+    if(typeof emailjs==='undefined'){
+      // Load emailjs if not loaded
+      const s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js';
+      s.onload=function(){emailjs.init(pubKey);doSendEmail(svcId,tplId,cnp,pac,agent);};
+      document.head.appendChild(s);
+    } else {
+      emailjs.init(pubKey);doSendEmail(svcId,tplId,cnp,pac,agent);
+    }
+  } else if(notifCanal==='sms'){
+    const tel=(pac.telefon||'').replace(/[^0-9+]/g,'');
+    const msg=encodeURIComponent(document.getElementById('notifMesajSms').value);
+    if(!tel){toast('Numar de telefon lipsa','error');return;}
+    window.open('sms:'+tel+'?body='+msg);
+    addJurnalAuto(cnp,'sms','SMS trimis: '+document.getElementById('notifMesajSms').value,agent);
+    closeModal('modalNotif');toast('SMS deschis in aplicatie','success');
+  } else {
+    const tel=(pac.telefon||'').replace(/[^0-9+]/g,'');
+    const msg=encodeURIComponent(document.getElementById('notifMesajSms').value);
+    if(!tel){toast('Numar de telefon lipsa','error');return;}
+    window.open('https://wa.me/'+tel.replace('+','')+'?text='+msg);
+    addJurnalAuto(cnp,'whatsapp','WhatsApp trimis: '+document.getElementById('notifMesajSms').value,agent);
+    closeModal('modalNotif');toast('WhatsApp deschis','success');
+  }
+}
+
+function doSendEmail(svcId,tplId,cnp,pac,agent){
+  const params={to_email:document.getElementById('notifEmail').value,name:pac.nume||cnp,subject:document.getElementById('notifSubiect').value,message:document.getElementById('notifMesaj').value,agent_name:agent};
+  document.getElementById('btnSendNotif').textContent='Se trimite...';
+  emailjs.send(svcId,tplId,params).then(function(){
+    addJurnalAuto(cnp,'email','Email trimis: '+params.subject,agent);
+    closeModal('modalNotif');toast('Email trimis cu succes','success');
+  }).catch(function(e){toast('Eroare trimitere email: '+e.text,'error');document.getElementById('btnSendNotif').textContent='Trimite Email';});
+}
+
+function addJurnalAuto(cnp,tip,text,agent){
+  if(!JURNAL[cnp])JURNAL[cnp]=[];
+  JURNAL[cnp].unshift({id:uid(),tip,text,data:new Date().toISOString(),agent});
+  saveJurnal(cnp);
+  // Marcheaza alertele ca trimise
+  Object.values(ALERTE).filter(a=>a.cnp_pacient===cnp&&a.status==='activa').forEach(a=>{a.status='trimisa';saveAlerta(a.id,a);});
+  renderAlerte();updateBadges();
+}
+
+// NOTIFICARI IN MASA
+function openNotifMasa(){
+  const selected = [...document.querySelectorAll('.alert-chk:checked')].map(c=>c.value);
+  if(!selected.length){
+    // Ia toti pacientii din alertele active
+    const cnpSet=[...new Set(Object.values(ALERTE).filter(a=>a.status==='activa'||(a.status==='activa')).map(a=>a.cnp_pacient))];
+    masaTargets=cnpSet;
+  } else {
+    masaTargets=[...new Set(selected.map(id=>ALERTE[id]?ALERTE[id].cnp_pacient:'').filter(Boolean))];
+  }
+  document.getElementById('masaInfo').textContent=`${masaTargets.length} pacienti selectati pentru notificare in masa.`;
+  setMasaCanal('email');
+  const tpl=CFG.template_email||document.getElementById('sTplEmail').value;
+  document.getElementById('masaMesaj').value=tpl;
+  document.getElementById('masaMesajSms').value=CFG.template_sms||document.getElementById('sTplSms').value;
+  document.getElementById('masaSubiect').value='Decizie decontare — reinnoire necesara';
+  document.getElementById('masaProgress').style.display='none';
+  document.getElementById('modalMasa').classList.add('open');
+}
+let masaTargets=[];
+function setMasaCanal(c){
+  masaCanal=c;
+  ['email','sms','whatsapp'].forEach(x=>{document.getElementById('masaCanal'+cap(x)).classList.toggle('active',x===c);});
+  document.getElementById('masaEmailSec').style.display=c==='email'?'block':'none';
+  document.getElementById('masaSmsSec').style.display=c!=='email'?'block':'none';
+}
+async function doSendMasa(){
+  if(!masaTargets.length){toast('Niciun pacient selectat','error');return;}
+  document.getElementById('masaProgress').style.display='block';
+  document.getElementById('btnSendMasa').disabled=true;
+  const agent=currentUser?(currentUser.displayName||currentUser.email):'Agent';
+  let sent=0;
+  for(let i=0;i<masaTargets.length;i++){
+    const cnp=masaTargets[i];const pac=PACIENTI[cnp];
+    if(!pac)continue;
+    document.getElementById('masaBar').style.width=Math.round((i/masaTargets.length)*100)+'%';
+    document.getElementById('masaLabel').textContent=`Se trimite ${i+1}/${masaTargets.length}: ${pac.nume||cnp}`;
+    if(masaCanal==='email'&&pac.email){
+      // Placeholder — in productie se foloseste emailjs per pacient
+      addJurnalAuto(cnp,'email','Email masa trimis: '+document.getElementById('masaSubiect').value,agent);
+      sent++;
+    } else if(masaCanal!=='email'){
+      addJurnalAuto(cnp,masaCanal,cap(masaCanal)+' masa: mesaj pregatit',agent);
+      sent++;
+    }
+    await sleep(100);
+  }
+  document.getElementById('masaBar').style.width='100%';
+  document.getElementById('masaLabel').textContent=`Finalizat: ${sent} notificari procesate`;
+  document.getElementById('btnSendMasa').disabled=false;
+  toast('Notificari in masa trimise: '+sent,'success');
+}
+
+// ════════════════════════════════════════════════
+// ACTIUNI PACIENT
+// ════════════════════════════════════════════════
+function openActiune(cnp, tip){
+  actiuneTarget={cnp,tip};
+  const pac=PACIENTI[cnp];
+  const titluri={reziliat:'Reziliaza contract',privat:'Trecere la plata privata',necompliant:'Marcheaza necompliant',activ:'Reactiveaza pacient'};
+  document.getElementById('actTitlu').textContent=titluri[tip]||tip;
+  let body='';
+  if(tip==='necompliant'){
+    body=`<div class="form-row"><div class="form-lbl">Pacient: ${pac?pac.nume:cnp}</div></div>
+    <div class="form-row"><div class="form-lbl">Data urmarire complianta</div><input type="date" id="actData" class="form-inp" value="${new Date(Date.now()+15*86400000).toISOString().slice(0,10)}"></div>
+    <div class="form-row"><div class="form-lbl">Motiv / observatii</div><textarea id="actObs" class="form-inp">Pacient nu raspunde la notificari.</textarea></div>`;
+    document.getElementById('btnActOk').textContent='Confirma necompliant';
+    document.getElementById('btnActOk').className='btn btnr';
+  } else if(tip==='reziliat'){
+    body=`<div class="form-row"><div class="form-lbl">Pacient: ${pac?pac.nume:cnp}</div></div>
+    <div class="form-row"><div class="form-lbl">Motiv reziliere</div><textarea id="actObs" class="form-inp">Contract reziliat la cererea pacientului.</textarea></div>`;
+    document.getElementById('btnActOk').textContent='Reziliaza contract';
+    document.getElementById('btnActOk').className='btn btnr';
+  } else if(tip==='privat'){
+    body=`<div class="form-row"><div class="form-lbl">Pacient: ${pac?pac.nume:cnp}</div></div>
+    <p style="font-size:13px;color:var(--t2);margin-bottom:12px">Pacientul trece la plata privata si nu mai necesita decizie CNAS. Alertele active se vor inchide.</p>`;
+    document.getElementById('btnActOk').textContent='Confirma plata privata';
+    document.getElementById('btnActOk').className='btn btnt';
+  }
+  document.getElementById('actBody').innerHTML=body;
+  document.getElementById('modalActiune').classList.add('open');
+}
+
+function execActiune(){
+  if(!actiuneTarget)return;
+  const {cnp,tip}=actiuneTarget;
+  const pac=PACIENTI[cnp]||{cnp};
+  const agent=currentUser?(currentUser.displayName||currentUser.email):'Agent';
+  const obs=(document.getElementById('actObs')||{}).value||'';
+
+  if(tip==='necompliant'){
+    const data=(document.getElementById('actData')||{}).value||'';
+    pac.status='necompliant';pac.data_urmarire=data;
+    PACIENTI[cnp]=pac;savePacient(cnp,pac);
+    if(data){
+      const rem={id:uid(),cnp_pacient:cnp,tip:'complianta',data,text:obs||'Verificare complianta',status:'pending',agent,creat:new Date().toISOString()};
+      REMINDERE.push(rem);saveReminder(rem);
+    }
+    addJurnalAuto(cnp,'necompliant',obs||'Pacient marcat necompliant',agent);
+    toast('Pacient marcat necompliant','success');
+  } else if(tip==='reziliat'){
+    pac.status='reziliat';pac.motiv_reziliere=obs;
+    PACIENTI[cnp]=pac;savePacient(cnp,pac);
+    // Inchide toate alertele
+    Object.values(ALERTE).filter(a=>a.cnp_pacient===cnp&&a.status==='activa').forEach(a=>{a.status='inchisa';a.motiv_inchidere='reziliere';saveAlerta(a.id,a);});
+    addJurnalAuto(cnp,'nota','Contract reziliat: '+obs,agent);
+    toast('Contract reziliat','success');
+  } else if(tip==='privat'){
+    pac.status='privat';
+    PACIENTI[cnp]=pac;savePacient(cnp,pac);
+    Object.values(ALERTE).filter(a=>a.cnp_pacient===cnp&&a.status==='activa').forEach(a=>{a.status='inchisa';a.motiv_inchidere='plata_privata';saveAlerta(a.id,a);});
+    addJurnalAuto(cnp,'nota','Trecut la plata privata',agent);
+    toast('Pacient trecut la plata privata','success');
+  }
+
+  closeModal('modalActiune');
+  renderPL();renderDB();renderAlerte();updateBadges();
+  if(selCnp===cnp) renderFisa(cnp);
+}
+
+function openActiuneComplianta(cnp, remId){
+  actiuneTarget={cnp,remId,tip:'complianta'};
+  const pac=PACIENTI[cnp];
+  document.getElementById('actTitlu').textContent='Verificare complianta';
+  document.getElementById('actBody').innerHTML=`
+    <div style="margin-bottom:14px;font-size:13px;color:var(--t2)">Pacient: <strong>${pac?pac.nume:cnp}</strong></div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <button class="btn btnt" onclick="resolveComplianta('${cnp}','${remId}',true)">&#10003; Pacientul a depus actele / a obtinut decizia</button>
+      <button class="btn" onclick="resolveComplianta('${cnp}','${remId}',false)">
+        <div style="width:100%">
+          <div>&#x27F3; Inca necompliant — seteaza noua data urmarire</div>
+          <input type="date" id="newUrm" class="form-inp" style="margin-top:6px" value="${new Date(Date.now()+15*86400000).toISOString().slice(0,10)}" onclick="event.stopPropagation()">
+        </div>
+      </button>
+    </div>`;
+  document.getElementById('btnActOk').style.display='none';
+  document.getElementById('modalActiune').classList.add('open');
+}
+
+function resolveComplianta(cnp, remId, compliant){
+  const agent=currentUser?(currentUser.displayName||currentUser.email):'Agent';
+  const pac=PACIENTI[cnp]||{cnp};
+
+  // Inchide reminderul
+  const rem=REMINDERE.find(r=>r.id===remId);
+  if(rem){rem.status='done';saveReminder(rem);}
+
+  if(compliant){
+    pac.status='activ';delete pac.data_urmarire;
+    PACIENTI[cnp]=pac;savePacient(cnp,pac);
+    Object.values(ALERTE).filter(a=>a.cnp_pacient===cnp&&a.tip==='complianta'&&a.status==='activa').forEach(a=>{a.status='inchisa';a.motiv_inchidere='reluare_complianta';saveAlerta(a.id,a);});
+    addJurnalAuto(cnp,'nota','Pacient compliant — a depus actele si a obtinut decizia. Se reia procesul de alertare.',agent);
+    toast('Pacient reactivat — ciclu alertare reia','success');
+  } else {
+    const newData=(document.getElementById('newUrm')||{}).value||'';
+    if(newData){
+      pac.data_urmarire=newData;PACIENTI[cnp]=pac;savePacient(cnp,pac);
+      const nr={id:uid(),cnp_pacient:cnp,tip:'complianta',data:newData,text:'Re-verificare complianta',status:'pending',agent,creat:new Date().toISOString()};
+      REMINDERE.push(nr);saveReminder(nr);
+      toast('Noua data de urmarire setata: '+newData,'success');
+    }
+  }
+  closeModal('modalActiune');
+  renderPL();renderDB();renderRemindere();renderAlerte();updateBadges();
+}
+
+// ════════════════════════════════════════════════
+// IMPORT ATTOSOFT
+// ════════════════════════════════════════════════
+function doDrop(e){e.preventDefault();document.getElementById('izone').classList.remove('drag');const f=e.dataTransfer.files[0];if(f)handleFile(f);}
+
+function handleFile(file){
+  if(!file)return;
+  const r=new FileReader();
+  r.onload=function(e){
+    try{
+      const wb=XLSX.read(e.target.result,{type:'binary',cellDates:false});
+      const ws=wb.Sheets[wb.SheetNames[0]];
+      const rows=XLSX.utils.sheet_to_json(ws,{header:1,raw:true,defval:''});
+      parseAttoSoft(rows, file.name);
+    }catch(err){toast('Eroare la citire: '+err.message,'error');}
+  };
+  r.readAsBinaryString(file);
+}
+
+function parseAttoSoft(rows, fname){
+  // Gasim randul header — primul rand cu 10+ celule nenule
+  let hIdx=0;
+  for(let i=0;i<Math.min(rows.length,20);i++){
+    if(rows[i].filter(c=>String(c||'').trim()).length>=10){hIdx=i;break;}
+  }
+  const headers=rows[hIdx].map(h=>String(h||'').trim());
+
+  // Mapare coloane AttoSoft
+  function col(name){return headers.findIndex(h=>h.includes(name));}
+  const cNume=col('Partener|Nume');
+  const cCnp=col('Partener|CNP');
+  const cJudet=col('Partener|Judet');
+  const cTel=col('Partener|Telefon');
+  const cContract=col('Contract|Seria-Nr');
+  const cContractData=col('Contract|Data');
+  const cCasa=col('Decizie|Nume cofinantator');
+  const cNrDec=col('Decizie|Numar decizie');
+  const cDataDec=col('Decizie|Data decizie');
+  const cText=col('Decizie|Text');
+  const cTarif=col('Suma decontata de casa');
+  const cDataPrimire=col('Decizie|Data primire');
+  const cMedic=col('Medic prescriptor');
+  const cSpital=col('Spitalul');
+  const cDiagnostic=col('Diagnostic');
+  const cObs=col('Observatii contract');
+  const cMotivRez=col('Motiv Reziliere');
+
+  const parsed=[];const warn=[];
+  const today=new Date().toISOString().slice(0,10);
+
+  rows.slice(hIdx+1).forEach(function(row,idx){
+    const cnp=String(row[cCnp]||'').trim().replace(/'/g,'');
+    if(!cnp||cnp.length<5)return;
+    const tarif=parseFloat(String(row[cTarif]||'0').replace(/[^0-9.]/g,''))||0;
+
+    // Excludem tarifele nemapate
+    if(TARIFE_EXCLUSE.includes(tarif))return;
+
+    const cod=TARIF_MAP[tarif]||null;
+    if(tarif>0&&!cod){warn.push(`Rand ${idx+hIdx+2}: tarif ${tarif} LEI pentru CNP ${cnp} nu este mapat — randul va fi ignorat.`);return;}
+
+    // Parseaza data expirare din textul narativ
+    const textDec=String(row[cText]||'');
+    let dataExp=parseDataExpirare(textDec);
+    let luniVal=null;
+
+    // Daca avem data emitere si expirare, calculam lunile
+    const dataEmRaw=row[cDataDec];
+    let dataEm=parseData(dataEmRaw);
+    if(dataEm&&dataExp){
+      const ms=new Date(dataExp)-new Date(dataEm);
+      luniVal=Math.round(ms/(30.44*86400000));
+    }
+    if(!luniVal||luniVal<1) luniVal=CFG.luni_valabilitate_default||3;
+    if(!dataExp&&dataEm){
+      const d=new Date(dataEm);d.setMonth(d.getMonth()+luniVal);
+      dataExp=d.toISOString().slice(0,10);
+      warn.push(`Rand ${idx+hIdx+2}: CNP ${cnp} — data expirare lipsa, calculata din emitere + ${luniVal} luni.`);
+    }
+
+    const motivRez=String(row[cMotivRez]||'').trim();
+
+    parsed.push({
+      cnp,
+      nume:String(row[cNume]||'').trim(),
+      judet:String(row[cJudet]||'').trim(),
+      telefon:cleanTel(String(row[cTel]||'')),
+      nr_contract:String(row[cContract]||'').trim(),
+      casa_asigurari:String(row[cCasa]||'').trim(),
+      nr_decizie:String(row[cNrDec]||'').trim(),
+      data_emitere:dataEm||'',
+      data_expirare:dataExp||'',
+      luni_valabilitate:luniVal,
+      tarif_lunar:tarif,
+      cod_aparat:cod||'',
+      data_primire:parseData(row[cDataPrimire])||'',
+      medic:String(row[cMedic]||'').trim(),
+      spital:String(row[cSpital]||'').trim(),
+      diagnostic:String(row[cDiagnostic]||'').trim(),
+      observatii:String(row[cObs]||'').trim(),
+      motiv_reziliere:motivRez,
+      _status: tarif===0?'fara_decizie':'ok'
+    });
+  });
+
+  pendingImport={rows:parsed,warn,fname};
+  showPreview(parsed,warn,fname);
+}
+
+function parseDataExpirare(text){
+  if(!text)return null;
+  // Gaseste toate datele in format dd/mm/yyyy sau dd.mm.yyyy
+  const regex=/(\d{1,2})[\/.](\d{1,2})[\/.](\d{4})/g;
+  const dates=[];let m;
+  while((m=regex.exec(text))!==null){
+    const d=`${m[3]}-${String(m[2]).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+    dates.push(d);
+  }
+  if(!dates.length)return null;
+  return dates[dates.length-1]; // Luam ultima data (decizie extinsa)
+}
+
+function parseData(val){
+  if(!val)return null;
+  // Serial Excel
+  if(typeof val==='number'){
+    const d=new Date((val-25569)*86400000);
+    return d.toISOString().slice(0,10);
+  }
+  const s=String(val).trim();
+  // dd.mm.yyyy
+  const m1=s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(m1)return `${m1[3]}-${m1[2].padStart(2,'0')}-${m1[1].padStart(2,'0')}`;
+  // yyyy-mm-dd
+  if(/^\d{4}-\d{2}-\d{2}$/.test(s))return s;
+  return null;
+}
+
+function cleanTel(t){
+  t=t.replace(/^'/,'').trim();
+  // Ia primul numar daca sunt mai multe
+  const m=t.match(/[0-9+]{10,}/);
+  return m?m[0]:t;
+}
+
+function showPreview(parsed, warn, fname){
+  document.getElementById('prevSec').style.display='block';
+  document.getElementById('prevTitlu').textContent=`Previzualizare: ${fname}`;
+  document.getElementById('prevSubtitlu').textContent=`${parsed.length} randuri valide detectate`;
+
+  const tb=document.getElementById('tPrev');
+  tb.innerHTML=parsed.slice(0,50).map(r=>`<tr>
+    <td><div class="pn">${r.nume}</div></td>
+    <td><span class="pcnp">${r.cnp}</span></td>
+    <td>${r.judet||'-'}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:11px">${r.nr_decizie||'-'}</td>
+    <td>${r.cod_aparat?`<span class="badge bt">${r.cod_aparat}</span>`:`<span class="badge ba">fara</span>`}</td>
+    <td>${r.tarif_lunar?fv(r.tarif_lunar)+' LEI':'-'}</td>
+    <td>${r.data_emitere||'-'}</td>
+    <td>${r.data_expirare||'-'}</td>
+    <td>${r.luni_valabilitate||'-'}</td>
+    <td>${r.casa_asigurari||'-'}</td>
+    <td>${r._status==='fara_decizie'?'<span class="badge ba">fara decizie</span>':'<span class="badge bg">ok</span>'}</td>
+  </tr>`).join('');
+  if(parsed.length>50) document.getElementById('tPrev').insertAdjacentHTML('beforeend',`<tr><td colspan="11" style="text-align:center;color:var(--t3);padding:10px">... si ${parsed.length-50} randuri suplimentare</td></tr>`);
+
+  const wEl=document.getElementById('prevWarn');
+  wEl.innerHTML=warn.length?`<div style="background:var(--abg);border:1px solid rgba(133,79,11,.2);border-radius:var(--rs);padding:12px 16px;margin-bottom:8px"><div style="font-weight:600;color:var(--amber);margin-bottom:6px">&#9888; ${warn.length} avertismente</div>${warn.map(w=>`<div style="font-size:12px;color:var(--t2);margin-bottom:3px">${w}</div>`).join('')}</div>`:'';
+}
+
+async function doImport(){
+  if(!pendingImport){toast('Niciun fisier selectat','error');return;}
+  if(!window.db){toast('Firebase indisponibil','error');return;}
+
+  const btn=document.getElementById('btnImport');
+  btn.textContent='Se importa...';btn.disabled=true;
+
+  const {rows,fname}=pendingImport;
+  const agent=currentUser?(currentUser.displayName||currentUser.email):'Agent';
+  let pacNoi=0, decActualizate=0;
+
+  // Procesam datele in memorie intai
+  const ops=[]; // {col, id, data} - operatii de scris
+
+  for(const r of rows){
+    const cnp=r.cnp;
+
+    // Upsert pacient in memorie
+    if(!PACIENTI[cnp]){
+      PACIENTI[cnp]={cnp,nume:r.nume,judet:r.judet,telefon:r.telefon,nr_contract:r.nr_contract,email:'',status:'activ',rata_lunara:r.tarif_lunar};
+      pacNoi++;
+    } else {
+      const p=PACIENTI[cnp];
+      p.nume=r.nume||p.nume;p.judet=r.judet||p.judet;p.telefon=r.telefon||p.telefon;p.nr_contract=r.nr_contract||p.nr_contract;
+      if(r.tarif_lunar) p.rata_lunara=r.tarif_lunar;
+    }
+    if(r.motiv_reziliere&&PACIENTI[cnp].status==='activ'){
+      PACIENTI[cnp].status='reziliat';PACIENTI[cnp].motiv_reziliere=r.motiv_reziliere;
+    }
+    ops.push({col:'pacienti',id:cnp,data:{...PACIENTI[cnp]}});
+
+    if(r._status==='fara_decizie'||!r.cod_aparat) continue;
+
+    // Idempotent check
+    const identica=Object.values(DECIZII).find(d=>d.cnp_pacient===cnp&&d.nr_decizie===r.nr_decizie&&d.data_emitere===r.data_emitere);
+    if(identica) continue;
+
+    // Arhiveaza decizia veche daca exista
+    const decExist=Object.values(DECIZII).find(d=>d.cnp_pacient===cnp&&d.cod_aparat===r.cod_aparat&&d.status==='activa');
+    if(decExist){
+      decExist.status='arhivata';
+      ops.push({col:'decizii',id:decExist.id,data:{...decExist}});
+      closeAlerteDecizie(decExist.id,'decizie_noua');
+      decActualizate++;
+    }
+
+    // Decizie noua
+    const decId='dec_'+cnp+'_'+r.cod_aparat+'_'+(r.nr_decizie||Date.now()).replace(/[^a-zA-Z0-9]/g,'_');
+    const decNou={id:decId,cnp_pacient:cnp,nr_decizie:r.nr_decizie,nr_contract:r.nr_contract,cod_aparat:r.cod_aparat,tarif_lunar:r.tarif_lunar,data_emitere:r.data_emitere,data_expirare:r.data_expirare,luni_valabilitate:r.luni_valabilitate,status:'activa',sursa:'import',data_primire:r.data_primire,casa_asigurari:r.casa_asigurari,medic:r.medic,spital:r.spital,diagnostic:r.diagnostic,observatii:r.observatii};
+    DECIZII[decId]=decNou;
+    ops.push({col:'decizii',id:decId,data:{...decNou}});
+  }
+
+  // Scriem in Firestore cu batch-uri de 400 (limita e 500)
+  btn.textContent=`Se salveaza ${ops.length} inregistrari...`;
+  const BATCH_SIZE=400;
+  try{
+    for(let i=0;i<ops.length;i+=BATCH_SIZE){
+      const chunk=ops.slice(i,i+BATCH_SIZE);
+      const batch=window.db.batch();
+      chunk.forEach(op=>{
+        const ref=window.db.collection(op.col).doc(op.id);
+        batch.set(ref,op.data,{merge:true});
+      });
+      await batch.commit();
+      btn.textContent=`Se salveaza... ${Math.min(i+BATCH_SIZE,ops.length)}/${ops.length}`;
+    }
+  }catch(e){
+    toast('Eroare la salvare: '+e.message,'error');
+    btn.textContent='Confirma importul';btn.disabled=false;
+    return;
+  }
+
+  // Metadate import
+  try{
+    await window.db.collection('imports').add({fisier:fname,randuri:rows.length,pacienti_noi:pacNoi,decizii_actualizate:decActualizate,agent,ts:firebase.firestore.FieldValue.serverTimestamp()});
+  }catch(e){}
+
+  checkAndGenerateAlerte();
+  renderDB();renderPL();renderAlerte();renderRemindere();updateBadges();
+  const tb=document.getElementById('tImpHist');
+  if(tb)tb.insertAdjacentHTML('afterbegin',`<tr><td>${new Date().toLocaleString('ro-RO')}</td><td>${fname}</td><td>${rows.length}</td><td>${pacNoi}</td><td>${decActualizate}</td><td>${agent}</td></tr>`);
+
+  btn.textContent='Confirma importul';btn.disabled=false;
+  toast(`Import finalizat: ${pacNoi} pacienti noi, ${decActualizate} decizii actualizate`,'success');
+  resetImport();
+}
+
+function resetImport(){
+  pendingImport=null;
+  document.getElementById('prevSec').style.display='none';
+  document.getElementById('fi').value='';
+}
+
+// ════════════════════════════════════════════════
+// HELPERS UI
+// ════════════════════════════════════════════════
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  document.getElementById('ptitle').textContent=PAGES[id]||id;
+  if(id==='dashboard')renderDB();
+  if(id==='jurnal')renderPL();
+  if(id==='alerte')renderAlerte();
+  if(id==='remindere')renderRemindere();
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function initModalListeners(){
+  document.querySelectorAll('.mbg').forEach(m=>{
+    m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');});
+  });
+}
+
+function toggleSidebar(){document.querySelector('.sidebar').classList.toggle('open');document.getElementById('sidebarOverlay').classList.toggle('open');}
+function closeSidebar(){document.querySelector('.sidebar').classList.remove('open');document.getElementById('sidebarOverlay').classList.remove('open');}
+
+function updateBadges(){
+  const alerteActive=Object.values(ALERTE).filter(a=>a.status==='activa').length;
+  const ab=document.getElementById('alertBadge');
+  if(ab){ab.textContent=alerteActive;ab.style.display=alerteActive?'inline':'none';}
+  const today=new Date().toISOString().slice(0,10);
+  const remUrgent=REMINDERE.filter(r=>r.tip==='complianta'&&r.status==='pending'&&r.data<=today).length;
+  const rb=document.getElementById('remBadge');
+  if(rb){rb.textContent=remUrgent;rb.style.display=remUrgent?'inline':'none';}
+}
+
+function tipAlertaBadge(tip){
+  const m={
+    'pre-expirare-30':'<span class="badge ba">Pre-exp 30z</span>',
+    'pre-expirare-10':'<span class="badge bo">Pre-exp 10z</span>',
+    'depasire-10':'<span class="badge br">Dep. prima</span>',
+    'depasire-recurenta':'<span class="badge br">Dep. recurenta</span>',
+    'complianta':'<span class="badge bp">Complianta</span>'
+  };
+  return m[tip]||`<span class="badge">${tip}</span>`;
+}
+function statusBadge(s){const m={'activa':'<span class="badge br">Activa</span>','trimisa':'<span class="badge bb">Trimisa</span>','inchisa':'<span class="badge bg">Inchisa</span>'};return m[s]||s;}
+function statusDot(s){const m={'activ':'sdot-green','reziliat':'sdot-gray','privat':'sdot-blue','necompliant':'sdot-red'};return `<span class="sdot ${m[s]||'sdot-gray'}"></span>`;}
+function icoTip(t){const m={apel:'📞',email:'📧',whatsapp:'💬',intalnire:'🤝',promisiune:'📋',necompliant:'⚠️',nota:'📝'};return m[t]||'📝';}
+function bgTip(t){const m={apel:'var(--tbg)',email:'var(--bbg)',whatsapp:'var(--gbg)',intalnire:'var(--pbg)',promisiune:'var(--abg)',necompliant:'var(--rbg)',nota:'var(--bg)'};return m[t]||'var(--bg)';}
+function colTip(t){const m={apel:'var(--teal)',email:'var(--blue)',whatsapp:'var(--green)',intalnire:'var(--purple)',promisiune:'var(--amber)',necompliant:'var(--red)',nota:'var(--t2)'};return m[t]||'var(--t2)';}
+
+function uid(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
+function fv(v){return new Intl.NumberFormat('ro-RO',{minimumFractionDigits:0,maximumFractionDigits:0}).format(v||0);}
+function fd2(d){if(!d)return '-';try{const dt=new Date(d);return dt.toLocaleDateString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric'});}catch(e){return d;}}
+function fdt(d){
+  if(!d)return '-';
+  try{
+    // Firestore Timestamp object
+    const dt = (d && typeof d.toDate==='function') ? d.toDate() : new Date(d);
+    if(isNaN(dt.getTime()))return '-';
+    return dt.toLocaleString('ro-RO',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  }catch(e){return '-';}
+}
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1);}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+function toast(msg,t=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast'+(t?' '+t:'');el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3500);}
+
+// Init
+document.addEventListener('DOMContentLoaded', function(){
+  initModalListeners();
+});
+if(window._fbLoaded) startAuthListener();
+else window._fbQueue.push(startAuthListener);
+</script>
 </body>
 </html>
-
