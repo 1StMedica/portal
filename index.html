@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>1st Medica — Portal Intern</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;background:#f7f5ee;}
+body{font-family:'DM Sans',sans-serif;min-height:100vh;}
+
+:root{
+  --gold:#8a7730;
+  --gold-mid:#b09840;
+  --gold-light:#c8ad58;
+  --bg:#f7f5ee;
+  --bg-card:#f0ece0;
+  --border:#d4c88a;
+  --border-light:#e0d8b0;
+  --text-dark:#2a2510;
+  --text-mid:#5a4e28;
+  --text-muted:#8a7c50;
+}
+
+.page{min-height:100vh;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.page::before{content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse 50% 60% at 80% 20%,rgba(184,164,74,0.08) 0%,transparent 60%),
+             radial-gradient(ellipse 40% 40% at 10% 80%,rgba(184,164,74,0.05) 0%,transparent 60%);
+  pointer-events:none;}
+
+/* HEADER */
+.header{display:flex;align-items:center;justify-content:space-between;padding:28px 64px 24px;border-bottom:0.5px solid var(--border);position:relative;z-index:2;background:var(--bg);}
+.header-logo{display:flex;align-items:center;gap:18px;}
+.logo-img{width:64px;height:64px;border-radius:3px;object-fit:cover;border:0.5px solid var(--border-light);}
+.logo-sep{width:0.5px;height:38px;background:var(--border);}
+.logo-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--text-dark);letter-spacing:2px;text-transform:uppercase;line-height:1;}
+.logo-tagline{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);margin-top:5px;}
+.header-badge{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);}
+.badge-dot{width:6px;height:6px;border-radius:50%;background:var(--gold-mid);}
+
+/* HERO */
+.hero{padding:52px 64px 38px;position:relative;z-index:2;}
+.hero-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--text-muted);margin-bottom:16px;display:flex;align-items:center;gap:12px;}
+.hero-label::before{content:'';display:block;width:28px;height:0.5px;background:var(--gold-mid);}
+.hero-title{font-family:'Playfair Display',serif;font-size:42px;font-weight:400;line-height:1.15;color:var(--text-dark);margin-bottom:10px;max-width:480px;}
+.hero-title em{color:var(--gold);font-style:italic;}
+.hero-sub{font-size:11.5px;color:var(--text-mid);line-height:1.8;max-width:380px;font-weight:300;}
+
+/* DIVIDER */
+.gold-divider{display:flex;align-items:center;gap:14px;padding:0 64px;margin-bottom:36px;position:relative;z-index:2;}
+.gold-line{flex:1;height:0.5px;background:var(--border);}
+.gold-diamond{width:5px;height:5px;background:var(--gold-mid);transform:rotate(45deg);flex-shrink:0;}
+.gold-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;}
+
+/* CARDS — 4 columns */
+.cards-area{flex:1;padding:0 64px 60px;position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+.app-card{background:var(--bg-card);border:0.5px solid var(--border-light);border-radius:2px;padding:32px 28px 26px;cursor:pointer;transition:border-color 0.25s,background 0.25s,box-shadow 0.25s;position:relative;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
+.app-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-mid),transparent);opacity:0;transition:opacity 0.3s;}
+.app-card:hover{border-color:var(--gold-mid);background:#ece8d8;box-shadow:0 4px 24px rgba(176,152,64,0.12);}
+.app-card:hover::after{opacity:1;}
+.card-num{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--text-muted);margin-bottom:22px;}
+.card-icon-wrap{width:44px;height:44px;border:0.5px solid var(--border);border-radius:2px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;transition:border-color 0.25s;color:var(--gold);}
+.app-card:hover .card-icon-wrap{border-color:var(--gold-mid);}
+.card-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:500;color:var(--text-dark);margin-bottom:10px;line-height:1.3;}
+.card-desc{font-size:11px;color:var(--text-mid);line-height:1.8;font-weight:300;flex:1;}
+.card-footer{display:flex;align-items:center;justify-content:space-between;margin-top:22px;padding-top:14px;border-top:0.5px solid var(--border-light);}
+.card-cta{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);transition:color 0.2s;}
+.app-card:hover .card-cta{color:var(--gold);}
+.arrow-svg{width:13px;height:13px;stroke:var(--text-muted);fill:none;transition:transform 0.2s,stroke 0.2s;stroke-width:1.5;}
+.app-card:hover .arrow-svg{transform:translateX(4px);stroke:var(--gold);}
+
+/* FOOTER */
+.footer{padding:16px 64px;border-top:0.5px solid var(--border-light);display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2;background:var(--bg);}
+.footer-txt{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);}
+.f-dots{display:flex;gap:7px;}
+.f-dot{width:5px;height:5px;border-radius:50%;background:var(--border);}
+.f-dot.on{background:var(--gold-mid);}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-logo">
+      <img class="logo-img" src="Logo_Medica__rgb_.jpg" alt="1st Medica">
+      <div class="logo-sep"></div>
+      <div>
+        <div class="logo-name">1st Medica</div>
+        <div class="logo-tagline">Performanță în sănătate</div>
+      </div>
+    </div>
+    <div class="header-badge">
+      <div class="badge-dot"></div>
+      Portal intern
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-label">Aplicații integrate</div>
+    <div class="hero-title">Platformă de<br><em>management</em><br>integrat</div>
+    <div class="hero-sub">Acces centralizat la aplicațiile operaționale ale companiei.</div>
+  </div>
+
+  <div class="gold-divider">
+    <div class="gold-line"></div>
+    <div class="gold-diamond"></div>
+    <div class="gold-label">Selectați aplicația</div>
+    <div class="gold-diamond"></div>
+    <div class="gold-line"></div>
+  </div>
+
+  <div class="cards-area">
+
+    <a class="app-card" href="https://1stmedica-server-production.up.railway.app/" target="_blank">
+      <div class="card-num">— 01</div>
+      <div class="card-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      </div>
+      <div class="card-title">Contract Închiriere</div>
+      <div class="card-desc">Crearea contractelor de închiriere și a actelor adiționale.</div>
+      <div class="card-footer">
+        <div class="card-cta">Accesează</div>
+        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </div>
+    </a>
+
+    <a class="app-card" href="https://1stmedica.github.io/crm-restantieri/" target="_blank">
+      <div class="card-num">— 02</div>
+      <div class="card-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+      </div>
+      <div class="card-title">CRM Restanțieri</div>
+      <div class="card-desc">Urmărirea facturilor neîncasate.</div>
+      <div class="card-footer">
+        <div class="card-cta">Accesează</div>
+        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </div>
+    </a>
+
+    <a class="app-card" href="https://1stmedica.github.io/crm-decizii/" target="_blank">
+      <div class="card-num">— 03</div>
+      <div class="card-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      </div>
+      <div class="card-title">CRM Decizii</div>
+      <div class="card-desc">Urmărirea deciziilor de decontare dispozitive medicale.</div>
+      <div class="card-footer">
+        <div class="card-cta">Accesează</div>
+        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </div>
+    </a>
+
+    <a class="app-card" href="https://1stmedica.github.io/crm-vanzari/" target="_blank">
+      <div class="card-num">— 04</div>
+      <div class="card-icon-wrap">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      </div>
+      <div class="card-title">CRM Vânzări</div>
+      <div class="card-desc">Captarea și urmărirea oportunităților de vânzări.</div>
+      <div class="card-footer">
+        <div class="card-cta">Accesează</div>
+        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <div class="footer-txt">© 2025 1st Medica · Acces restricționat</div>
+    <div class="f-dots">
+      <div class="f-dot on"></div>
+      <div class="f-dot"></div>
+      <div class="f-dot"></div>
+      <div class="f-dot"></div>
+    </div>
+    <div class="footer-txt">Sistem intern v1.0</div>
+  </div>
+
+</div>
+</body>
+</html>
