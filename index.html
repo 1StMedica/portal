@@ -46,7 +46,7 @@ body{font-family:'DM Sans',sans-serif;min-height:100vh;}
 .gold-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--text-muted);white-space:nowrap;font-weight:600;}
 
 /* CARDS */
-.cards-area{flex:1;padding:0 64px 64px;position:relative;z-index:2;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+.cards-area{flex:1;padding:0 64px 64px;position:relative;z-index:2;display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
 .app-card{background:var(--bg-card);border:0.5px solid var(--border-light);border-radius:2px;padding:34px 30px 28px;cursor:pointer;transition:border-color 0.25s,background 0.25s,box-shadow 0.25s;position:relative;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:inherit;}
 .app-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold-mid),transparent);opacity:0;transition:opacity 0.3s;}
 .app-card:hover{border-color:var(--gold-mid);background:#ece8d8;box-shadow:0 4px 24px rgba(176,152,64,0.12);}
@@ -239,12 +239,26 @@ body{font-family:'DM Sans',sans-serif;min-height:100vh;}
       </div>
     </a>
 
+    <a class="app-card" href="https://fise-web-production.up.railway.app/" target="_blank">
+      <div class="card-num">— 08</div>
+      <div class="card-icon-wrap">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/></svg>
+      </div>
+      <div class="card-title">Fișe Service</div>
+      <div class="card-desc">Compatibil pentru concentrator de oxigen.</div>
+      <div class="card-footer">
+        <div class="card-cta">Accesează</div>
+        <svg class="arrow-svg" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg>
+      </div>
+    </a>
+
   </div>
 
   <div class="footer">
     <div class="footer-txt">© 2026 1st Medica · Acces restricționat</div>
     <div class="f-dots">
       <div class="f-dot on"></div>
+      <div class="f-dot"></div>
       <div class="f-dot"></div>
       <div class="f-dot"></div>
       <div class="f-dot"></div>
